@@ -20,7 +20,7 @@ handler.setFormatter(formatter)
 # Add the handler to the root logger
 logger.addHandler(handler)
 
-connection = sqlite3.connect('../data.db')
+connection = sqlite3.connect('data.db')
 cursor = connection.cursor()
 
 cursor.execute('''
