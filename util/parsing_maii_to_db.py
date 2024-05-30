@@ -92,8 +92,8 @@ def parse(url: str) -> str:
     return ';'.join(player_id)
 
 
-url = 'https://rating.maii.li/b/tournaments/'
-response = requests.get(url)
+URL = 'https://rating.maii.li/b/tournaments/'
+response = requests.get(URL)
 
 soup = BeautifulSoup(response.content, 'html.parser', from_encoding='utf-8')
 
