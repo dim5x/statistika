@@ -2,7 +2,7 @@
 Description=Stat
 
 [Service]
-ExecStart=$HOME/stat/run.sh
+ExecStart=/home/dim5x/stat/run.sh
 
 [Install]
 WantedBy=multi-user.target

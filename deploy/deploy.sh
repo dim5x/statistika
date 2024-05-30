@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Запускать в папке проекта (/opt/testbot)
+# Запускать в папке проекта
 #apt-get update
 apt install -y python3-pip
 apt install -y python3-venv
@@ -18,7 +18,7 @@ deactivate
 chmod +x run.sh
 
 # сконфигурируем сервис
-ln -s "$HOME"/stat/stat.service /etc/systemd/system/stat.service
+ln -s /home/dim5x/stat/stat.service /etc/systemd/system/stat.service
 chmod 664 /etc/systemd/system/stat.service
 systemctl daemon-reload
 
