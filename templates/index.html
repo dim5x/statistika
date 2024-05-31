@@ -63,7 +63,7 @@
 
     <section id="add-player">
         <h1>Добавить игрока</h1>
-        <form method="post">
+        <form id="player-form" method="post">
             <div>
                 <label for="player-name">ID игрока:</label>
                 <input type="text" id="player-name" name="player-name">
@@ -76,7 +76,7 @@
 
     <section id="add-team">
         <h1>Добавить команду</h1>
-        <form method="post">
+        <form id="team-form" method="post">
             <div>
                 <label for="team-name">Название команды:</label>
                 <input type="text" id="team-name" name="team-name">
@@ -121,6 +121,18 @@
             // Дальнейшие действия с данными (например, отправка на сервер)
             console.log(gameNames);
             // Здесь можно выполнить дополнительные действия с данными (например, отправка на сервер)
+        });
+
+        $('#player-form').submit(function (event) {
+            event.preventDefault(); // Отмена стандартного действия отправки формы
+            alert("OK");
+            console.log('OK');
+        });
+
+        $('#team-form').submit(function (event) {
+            event.preventDefault(); // Отмена стандартного действия отправки формы
+            alert("OK");
+            console.log('OK');
         });
 
         // Make cells editable
