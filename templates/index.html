@@ -7,22 +7,20 @@
     <!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"-->
     <!--          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">-->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="static/css/index.css">
+
     <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script type="text/javascript" charset="utf8"
             src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
-    <script type="text/javascript" charset="utf8" src="/static/js/my.js"></script>
     <script type="text/javascript" charset="utf8"
             src="https://cdnjs.cloudflare.com/ajax/libs/jeditable.js/2.0.19/jquery.jeditable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/datetime-moment.js"></script>
-    <link rel="stylesheet" type="text/css" href="/static/css/my.css">
+    <script type="text/javascript" charset="utf8" src="static/js/index.js"></script>
+
+
 </head>
 <body>
-<!--<h1>Team Data</h1>-->
-<!--<div class="container">-->
-<!--    {{ tables|safe }}-->
-<!--</div>-->
-
 <div style="border: brown 1px solid">
     <div class="container">
         <table id="data" border="1" class="dataframe data" style="width: 50%">
@@ -39,51 +37,11 @@
                 <th>11.04.2024</th>
                 <th>18.04.2024</th>
             </tr>
-            <!--            <tr>-->
-            <!--                <th colspan="1" data-dt-order="disable">-</th>-->
-            <!--                <th colspan="1" data-dt-order="disable">-2 худ. {{adjusted_sums[0]}}</th>-->
-            <!--                <th colspan="1">Сумма {{sums[0]}}</th>-->
-            <!--                <th colspan="1" data-dt-order="disable">-2 худ. {{adjusted_sums[1]}}</th>-->
-            <!--                <th colspan="1">Сумма {{sums[1]}}</th>-->
-            <!--                <th colspan="1" data-dt-order="disable">-2 худ. {{adjusted_sums[2]}}</th>-->
-            <!--                <th colspan="1">Сумма {{sums[2]}}</th>-->
-            <!--                <th colspan="1" data-dt-order="disable">-2 худ. {{adjusted_sums[3]}}</th>-->
-            <!--                </th>-->
-            <!--                <th colspan="1">Сумма {{sums[3]}}</th>-->
-            <!--                <th colspan="1" data-dt-order="disable">-2 худ. {{adjusted_sums[4]}}</th>-->
-            <!--                <th colspan="1">Сумма {{sums[4]}}</th>-->
-            <!--                <th colspan="1" data-dt-order="disable">-2 худ. {{adjusted_sums[5]}}</th>-->
-            <!--                <th colspan="1">Сумма {{sums[5]}}</th>-->
-            <!--                <th colspan="1" data-dt-order="disable">-2 худ. {{adjusted_sums[6]}}</th>-->
-            <!--                <th colspan="1">Сумма {{sums[6]}}</th>-->
-            <!--                <th colspan="1" data-dt-order="disable">-2 худ. {{adjusted_sums[7]}}</th>-->
-            <!--                <th colspan="1">Сумма {{sums[7]}}</th>-->
-            <!--            </tr>-->
-            <!--            <tr>-->
-            <!--                <th colspan="1" data-sort='DD.MM.YYYY'>-</th>-->
-            <!--                <th colspan="1" data-dt-order="disable">Вопросы</th>-->
-            <!--                <th colspan="1">Рейтинг</th>-->
-            <!--                <th colspan="1" data-dt-order="disable">Вопросы</th>-->
-            <!--                <th colspan="1">Рейтинг</th>-->
-            <!--                <th colspan="1" data-dt-order="disable">Вопросы</th>-->
-            <!--                <th colspan="1">Рейтинг</th>-->
-            <!--                <th colspan="1" data-dt-order="disable">Вопросы</th>-->
-            <!--                <th colspan="1">Рейтинг</th>-->
-            <!--                <th colspan="1" data-dt-order="disable">Вопросы</th>-->
-            <!--                <th colspan="1">Рейтинг</th>-->
-            <!--                <th colspan="1" data-dt-order="disable">Вопросы</th>-->
-            <!--                <th colspan="1">Рейтинг</th>-->
-            <!--                <th colspan="1" data-dt-order="disable">Вопросы</th>-->
-            <!--                <th colspan="1">Рейтинг</th>-->
-            <!--                <th colspan="1" data-dt-order="disable">Вопросы</th>-->
-            <!--                <th colspan="1">Рейтинг</th>-->
-            <!--            </tr>-->
             </thead>
             <tbody>
             {% for row in rows %}
             <tr>
                 {% for cell in row %}
-
                 <td>{{ cell }}</td>
                 {% endfor %}
             </tr>
@@ -93,45 +51,6 @@
         </table>
     </div>
 </div>
-<script>
-    $(document).ready(function () {
-        // Register the datetime sorting plugin with DataTables
-        $.fn.dataTable.moment('DD.MM.YYYY');
 
-        // Initialize DataTable
-        var table = $('.data').DataTable();
-
-        // Make cells editable
-        $('.data tbody td').editable(function (value, settings) {
-            var cell = table.cell(this);
-            var aPos = cell.index();
-
-            $.ajax({
-                type: "POST",
-                url: "/update",
-                data: {
-                    row_id: aPos.row,
-                    column_id: aPos.column,
-                    // column_name: table.column(aPos.column).header().innerText,
-                    value: value
-                },
-                success: function (response) {
-                    if (response.success) {
-                        cell.data(value).draw();
-                    } else {
-                        alert("Update failed: " + response.error);
-                    }
-                },
-                error: function () {
-                    alert("An error occurred while updating the cell.");
-                }
-            });
-
-            return value;
-        }, {
-            "height": "14px"
-        });
-    });
-</script>
 </body>
 </html>
