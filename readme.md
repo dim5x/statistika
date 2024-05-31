@@ -10,11 +10,11 @@ date       : name                               : tournament_id : player_id
 30.05.2024 : Синхрон Нехрустальной совы. День 2 : 10702         : 82887;27831;7148;...
 ```
 
->[!WARNING]
->Under Construction. (нужны абсолютные пути иначе не создаются символьные ссылки...).
->
->Deploy:
-> 1. Скопировать файлы из папки deploy в $HOME/stat на виртуалке.
+
+Deploy:
+
+    git clone https://github.com/dim5x/statistika.git
+
 > 2. chmod +x deploy.sh    
 > 3. sudo ./deploy.sh
 > 3. 
