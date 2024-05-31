@@ -41,7 +41,7 @@ echo "****************************"
 
 echo 'Cконфигурируем сервис:'
 echo 'Создадим ссылку на файл stat.service...'
-ln -s /stat.service /etc/systemd/system/stat.service
+ln -s stat.service /etc/systemd/system/stat.service
 echo 'OK.'
 echo 'Установим права 664 на файл stat.service...'
 chmod 664 /etc/systemd/system/stat.service
