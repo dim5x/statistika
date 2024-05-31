@@ -13,8 +13,4 @@ date       : name                               : tournament_id : player_id
 
 Deploy:
 
-    git clone https://github.com/dim5x/statistika.git
-
-> 2. chmod +x deploy.sh    
-> 3. sudo ./deploy.sh
-> 3. 
+    git clone https://github.com/dim5x/statistika.git && cd statistika && chmod +x deploy.sh && sudo ./deploy.sh
