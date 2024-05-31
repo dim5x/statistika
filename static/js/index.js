@@ -36,3 +36,18 @@ $(document).ready(function () {
         "height": "14px"
     });
 });
+
+function addTeam() {
+    alert('Добавить команду');
+    // Add your logic here to add a team
+}
+
+function addGame() {
+    alert('Добавить игру');
+    // Add your logic here to add a game
+}
+
+function addPlayer() {
+    alert('Добавить игрока');
+    // Add your logic here to add a player
+}

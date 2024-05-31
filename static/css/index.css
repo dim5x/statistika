@@ -1,47 +1,108 @@
-body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 20px;
-        }
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+}
 
-        .container {
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
+.sidebar {
+    width: 200px;
+    background-color: #333;
+    padding-top: 20px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
 
-        table.data {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 1em;
-            min-width: 400px;
-            border-radius: 5px 5px 0 0;
-            overflow: hidden;
-        }
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
 
-        table.data thead tr {
-            background-color: #009879;
-            color: #ffffff;
-            text-align: left;
-            font-weight: bold;
-        }
+.sidebar ul li {
+    margin: 0;
+    border-bottom: 1px solid #444;
+}
 
-        table.data th, table.data td {
-            padding: 12px 15px;
-            border: 1px solid #dddddd;
-        }
+.sidebar ul li a {
+    display: block;
+    color: white;
+    padding: 15px 20px;
+    text-decoration: none;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
 
-        table.data tbody tr {
-            border-bottom: 1px solid #dddddd;
-        }
+.sidebar ul li a:hover {
+    background-color: #575757;
+}
 
-        table.data tbody tr:nth-of-type(even) {
-            background-color: #f3f3f3;
-        }
+.sidebar ul li a:active, .sidebar ul li a:focus {
+    background-color: #007bff;
+    outline: none;
+}
 
-        table.data tbody tr:last-of-type {
-            border-bottom: 2px solid #009879;
-        }
+.content {
+    margin-left: 200px;
+    padding: 20px;
+    flex-grow: 1;
+}
+
+section {
+    display: none;
+}
+
+section:target {
+    display: block;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+}
+
+label, input, button {
+    margin-bottom: 10px;
+}
+
+#add-input {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    width: fit-content; /* Ширина кнопки подстраивается под содержимое */
+    display: inline-block; /* Кнопка становится строчно-блочным элементом */
+    border-radius: 50%; /* Создаем круглую форму кнопки */
+    transition: background-color 0.3s; /* Плавное изменение фона */
+}
+
+#add-input:hover {
+    background-color: #218838;
+}
+
+.input-group {
+    margin-bottom: 10px;
+}
+
+#add-input::after {
+    content: "+"; /* Добавляем символ плюса */
+    font-size: 20px; /* Размер шрифта плюса */
+}

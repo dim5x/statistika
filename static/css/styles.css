@@ -1,0 +1,105 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+}
+
+.sidebar {
+    width: 200px;
+    background-color: #333;
+    padding-top: 20px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin: 0;
+    border-bottom: 1px solid #444; /* Добавлена нижняя граница */
+}
+
+.sidebar ul li a {
+    display: block;
+    color: white;
+    padding: 15px 20px; /* Увеличены отступы */
+    text-decoration: none;
+    font-size: 16px; /* Увеличен размер шрифта */
+    transition: background-color 0.3s; /* Добавлен плавный переход */
+}
+
+.sidebar ul li a:hover {
+    background-color: #575757;
+}
+
+.sidebar ul li a:active, .sidebar ul li a:focus {
+    background-color: #007bff; /* Цвет выделенного элемента */
+    outline: none; /* Убирает стандартное выделение */
+}
+
+.content {
+    margin-left: 200px;
+    padding: 20px;
+    flex-grow: 1;
+}
+
+section {
+    display: none;
+}
+
+section:target {
+    display: block;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    /*max-width: 300px;*/
+}
+
+label, input, button {
+    margin-bottom: 10px;
+}
+/* Дополнительные стили для кнопки "Добавить поле" */
+.green-plus {
+    /*background-color: #28a745;*/
+    color: #28a745;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    margin-left: 10px; /* Добавлен отступ слева */
+    /*border-radius: 50%;*/
+    transition: background-color 0.3s;
+    font-size: 20px; /* Размер шрифта плюса */
+    line-height: 1; /* Убираем лишний отступ для выравнивания с текстом */
+}
+
+/* При наведении изменяем фон кнопки */
+.green-plus:hover {
+    background-color: white;
+}
+
+/* Отступ для кнопки "Добавить поле" */
+#add-input {
+    margin-top: 10px; /* Добавлен верхний отступ */
+}

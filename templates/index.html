@@ -1,28 +1,26 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ru">
 <head>
-    <meta charset="utf-8">
-    <title>DataTables Example</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"-->
-    <!--          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">-->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
-    <link rel="stylesheet" type="text/css" href="static/css/index.css">
-
-    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script type="text/javascript" charset="utf8"
-            src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
-    <script type="text/javascript" charset="utf8"
-            src="https://cdnjs.cloudflare.com/ajax/libs/jeditable.js/2.0.19/jquery.jeditable.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-    <script src="https://cdn.datatables.net/plug-ins/1.10.24/sorting/datetime-moment.js"></script>
-    <script type="text/javascript" charset="utf8" src="static/js/index.js"></script>
-
+    <title>Спортивный Сайт</title>
+    <link rel="stylesheet" href="static/css/styles.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
 
 </head>
 <body>
-<div style="border: brown 1px solid">
-    <div class="container">
+<div class="sidebar">
+    <ul>
+        <li><a href="#table">Таблица</a></li>
+        <li><a href="#add-game">Добавить игру</a></li>
+        <li><a href="#add-player">Добавить игрока</a></li>
+        <li><a href="#add-team">Добавить команду</a></li>
+    </ul>
+</div>
+<div class="content">
+    <section id="table">
+
         <table id="data" border="1" class="dataframe data" style="width: 50%">
             <thead>
 
@@ -49,8 +47,113 @@
             {% endfor %}
             </tbody>
         </table>
-    </div>
+    </section>
+
+    <section id="add-game">
+        <h1>Добавить игру</h1>
+        <form id="game-form" method="post">
+            <div id="input-container" class="input-group"> <!-- Добавлен класс "input-group" -->
+                <label for="game-name-1">ID пакета:</label>
+                <input type="text" id="game-name-1" name="game-name[]">
+                <button type="button" id="add-input" class="green-plus">+</button> <!-- Добавлен класс "green-plus" -->
+            </div>
+            <button type="submit">Добавить</button>
+        </form>
+    </section>
+
+    <section id="add-player">
+        <h1>Добавить игрока</h1>
+        <form method="post">
+            <div>
+                <label for="player-name">ID игрока:</label>
+                <input type="text" id="player-name" name="player-name">
+                <button type="submit">Добавить</button>
+            </div>
+
+        </form>
+    </section>
+
+
+    <section id="add-team">
+        <h1>Добавить команду</h1>
+        <form method="post">
+            <div>
+                <label for="team-name">Название команды:</label>
+                <input type="text" id="team-name" name="team-name">
+
+                <button type="submit">Добавить</button>
+            </div>
+        </form>
+    </section>
 </div>
 
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf8"
+        src="https://cdnjs.cloudflare.com/ajax/libs/jeditable.js/2.0.19/jquery.jeditable.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // var table = $('.data').DataTable();
+        var table = $('#data').DataTable();
+
+        // Добавление нового поля ввода при нажатии на кнопку
+        let inputCount = 1;
+        $('#add-input').click(function () {
+            inputCount++;
+            $('#input-container').append(
+                '<div class="input-group">' +
+                '<label for="game-name-' + inputCount + '">ID пакета: </label>' +
+                '<input type="text" id="game-name-' + inputCount + '" name="game-name[]">' +
+                '</div>'
+            );
+        });
+
+        // Обработка отправки формы
+        $('#game-form').submit(function (event) {
+            event.preventDefault(); // Отмена стандартного действия отправки формы
+            // Сбор значений всех полей ввода
+            let gameNames = [];
+            $('input[name="game-name[]"]').each(function () {
+                gameNames.push($(this).val());
+            });
+            // Дальнейшие действия с данными (например, отправка на сервер)
+            console.log(gameNames);
+            // Здесь можно выполнить дополнительные действия с данными (например, отправка на сервер)
+        });
+
+        // Make cells editable
+        $('.data tbody td').editable(function (value, settings) {
+            var cell = table.cell(this);
+            var aPos = cell.index();
+
+            $.ajax({
+                type: "POST",
+                url: "/update",
+                data: {
+                    row_id: aPos.row,
+                    column_id: aPos.column,
+                    // column_name: table.column(aPos.column).header().innerText,
+                    value: value
+                },
+                success: function (response) {
+                    if (response.success) {
+                        cell.data(value).draw();
+                    } else {
+                        alert("Update failed: " + response.error);
+                    }
+                },
+                error: function () {
+                    alert("An error occurred while updating the cell.");
+                }
+            });
+
+            return value;
+        }, {
+            "height": "14px"
+        });
+    });
+</script>
 </body>
 </html>
