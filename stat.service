@@ -3,10 +3,11 @@ Description=Stat
 After=syslog.target network.target
 
 [Service]
-WorkingDirectory=/$HOME/stat
-ExecStart=/$HOME/stat/venv/bin/python3 stat.py
+WorkingDirectory=/home/$SUDO_USER/statistika
+ExecStart=/home/$SUDO_USER/statistika/venv/bin/python3 stat.py
 
 Restart=always
 RestartSec=120
+
 [Install]
 WantedBy=multi-user.target

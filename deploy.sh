@@ -2,7 +2,8 @@
 
 SUDO_USER=$SUDO_USER
 echo "Executing service in '$SUDO_USER'"
-
+current_dir=$(pwd)
+echo "Текущая директория: $current_dir"
 # Запускать в папке проекта
 #apt-get update
 apt install -y python3-pip
@@ -24,9 +25,9 @@ echo "****************************"
 
 echo 'Cконфигурируем сервис:'
 echo 'Создадим ссылку на файл stat.service...'
-ln -s /home/"$SUDO_USER"/stat/stat.service /etc/systemd/system/stat.service
+ln -s /"$current_dir"/stat.service /etc/systemd/system/stat.service
 echo 'OK.'
-echo 'Сделаем права на файл stat.service...'
+echo 'Установим права 664 на файл stat.service...'
 chmod 664 /etc/systemd/system/stat.service
 echo 'OK.'
 echo 'Обновим конфигурацию systemd...'

@@ -15,4 +15,6 @@ date       : name                               : tournament_id : player_id
 >
 >Deploy:
 > 1. Скопировать файлы из папки deploy в $HOME/stat на виртуалке.
-> 2.     sudo ./deploy.sh
+> 2. chmod +x deploy.sh    
+> 3. sudo ./deploy.sh
+> 3. 
