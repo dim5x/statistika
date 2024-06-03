@@ -1,8 +1,8 @@
 #!/bin/bash
 
-if [ -f "data.db" ]; then
-    mv data.db ../
-    echo "File data.db copied successfully."
+if [ -f "statistika/data.db" ]; then
+    mv statistika/data.db .
+    echo "File data.db moved successfully."
     systemctl disable stat
     rm -rf /home/dim5x/statistika
     git clone https://github.com/dim5x/statistika.git && cd statistika && chmod +x deploy.sh && sudo ./deploy.sh

@@ -36,27 +36,27 @@ pip install -r requirements.txt
 
 deactivate
 
-echo "Виртуальное окружение создано."
+echo "  Виртуальное окружение создано."
 echo "****************************"
 
 echo 'Cконфигурируем сервис:'
-echo 'Создадим ссылку на файл stat.service...'
+echo '  Создадим ссылку на файл stat.service...'
 ln -s "$current_dir"/stat.service /etc/systemd/system/stat.service
-echo 'OK.'
-echo 'Установим права 664 на файл stat.service...'
+echo '    OK.'
+echo '  Установим права 664 на файл stat.service...'
 chmod 664 /etc/systemd/system/stat.service
-echo 'OK.'
-echo 'Обновим конфигурацию systemd...'
+echo '    OK.'
+echo '  Обновим конфигурацию systemd...'
 systemctl daemon-reload
-echo 'OK.'
+echo '    OK.'
 echo '****************************'
 
 
 echo 'Добавим в автозагрузку...'
 systemctl enable stat
-echo 'OK.'
+echo '  OK.'
 echo 'Запустим сервис...'
 systemctl start stat
-echo 'OK.'
+echo '  OK.'
 echo 'Проверим статус...'
 systemctl status stat
