@@ -1,16 +1,185 @@
-from flask import Flask, render_template, request, jsonify
+import json
+import sqlite3
+
+from flask import Flask, render_template, request, jsonify, g
+from flask_cors import CORS  # pip install flask_cors
 
 app = Flask(__name__)
+CORS(app)
+players = [[1, 'test', 78], [2, 'test2', 145], [3, 'test3', 23], [4, 'test4', 45]]
+
+rows = [
+    [1, 2, 3, 4, 1, 2, 3, 4, 7],
+    [1, 2, 3, 4, 1, 2, 3, 4, 7],
+    [1, 2, 3, 4, 1, 2, 3, 4, 7],
+    [1, 2, 3, 4, 1, 2, 3, 4, 7],
+]
+
+
+def get_db_connection():
+    db_connection = getattr(g, '_database', None)
+    if db_connection is None:
+        db_connection = g._database = sqlite3.connect('data.db')
+    return db_connection
+
+
+@app.teardown_appcontext
+def close_db_connection(exception):
+    db_connection = getattr(g, '_database', None)
+    if db_connection is not None:
+        db_connection.close()
+
 
 @app.route('/')
 def index():
-    rows = [
-        [1, 2, 3, 4, 1, 2, 3, 4, 7],
-        [1, 2, 3, 4, 1, 2, 3, 4, 7],
-        [1, 2, 3, 4, 1, 2, 3, 4, 7],
-        [1, 2, 3, 4, 1, 2, 3, 4, 8],
+    print('kek')
+    # return render_template('index.html', rows=rows,
+    #                        adjusted_sums=[1, 2, 3, 4],
+    #                        sums=[1, 2, 3, 4],
+    #                        players=players
+    #                        )
+    # return render_template('example5.html')
+    return render_template('index.html')
+
+
+@app.route('/get_columns', methods=['GET'])
+def get_columns():
+    # Подключение к базе данных SQLite
+    db_connection = get_db_connection()
+    cursor = db_connection.cursor()
+
+    # Выполнение SQL-запроса и получение данных
+    cursor.execute('SELECT * FROM main.teams_scores')  # Выберите все столбцы из таблицы players
+    data = cursor.fetchall()
+
+    # Получение названий столбцов из результирующего набора
+    columns = [description[0] for description in cursor.description]
+    print(f'{columns=}')
+    transformed_columns = []
+
+    # Цикл для преобразования каждого элемента массива строк в объект
+    for column in columns[1:]:
+        transformed_columns.append({
+            "title": column,
+            "field": column,
+            "editor": "input"  # if column == "team_name" else "number"
+            # Пример условной логики для определения значения editor
+        })
+
+    # Вывод преобразованных объектов
+    print(f'{transformed_columns=}')
+    return jsonify(transformed_columns)
+
+
+@app.route('/get_data_for_main_table', methods=['GET'])
+def get_data_for_main_table():
+    # Подключение к базе данных SQLite
+    db_connection = get_db_connection()
+    cursor = db_connection.cursor()
+
+    # Выполнение SQL-запроса и получение данных
+    cursor.execute('SELECT * FROM main.teams_scores')  # Выберите все столбцы из таблицы players
+    data = cursor.fetchall()
+
+    # Получение названий столбцов из результирующего набора
+    columns = [description[0] for description in cursor.description]
+    print(columns)
+
+    # Преобразование данных в формат JSON
+    json_data = []
+    for row in data:
+        if '_q' not in row[1]:
+            row_data = {}
+            for i in range(1, len(columns)):
+                row_data[columns[i]] = row[i]
+            json_data.append(row_data)
+    print(json_data)
+    # Вывод данных в формате JSON
+    print(json.dumps(json_data, indent=2, ensure_ascii=False))
+    # json_data = json.dumps([
+    #     {
+    #         "id": 16,
+    #         "team_name": "Золотая_шобла_r",
+    #         "Игра": '0',
+    #         "[14.03.2024]": 0,
+    #         "21.03.2024": 0,
+    #         "28.03.2024": 0,
+    #         "04.04.2024": 1,
+    #         "11.04.2024": 2,
+    #         "18.04.2024": 0
+    #     }
+    # ], indent=2, ensure_ascii=False)
+    return json_data
+
+
+@app.route('/get_data_for_table_players', methods=['GET'])
+def get_data_for_table_players():
+    db_connection = get_db_connection()
+    cursor = db_connection.cursor()
+
+    cursor.execute('SELECT * FROM main.players')  # Выберите все столбцы из таблицы players
+    data = cursor.fetchall()
+
+    columns = [description[0] for description in cursor.description]
+    print(columns)
+
+    json_data = []
+    for row in data:
+        row_data = {}
+        for i in range(len(columns)):
+            row_data[columns[i]] = row[i]
+        json_data.append(row_data)
+    print(json_data)
+    return json_data
+
+
+@app.route('/test', methods=['POST', 'GET'])
+def test():
+    if request.method == 'POST':
+        print(request.form)
+        print('OK')
+    json_data = [
+        {'id': 1, 'name': "Tiger Nixon", 'position': "System Architect", 'office': "Edinburgh", 'extension': "5421",
+         'startDate': "2011/04/25", 'salary': "Tiger Nixon"}
     ]
-    return render_template('index.html', rows=rows, adjusted_sums=[1, 2, 3, 4], sums=[1, 2, 3, 4])
+    l = {'data': [[1, 'test', 78],
+                  [2, 'test2', 145],
+                  [3, 'test3', 23],
+                  [4, 'test4', 45]],
+         'columns': ['id', 'name', 'position']
+         }
+    m = {
+        "data": [
+            {
+                "id": 1,
+                "name": "John Doe",
+                "position": "Developer"
+            },
+            {
+                "id": 2,
+                "name": "Jane Smith",
+                "position": "Designer"
+            },
+
+        ],
+
+    }
+
+    tabledata = [
+        {'id': '1', 'name': "Oli Bob", 'age': "12", 'col': "red", 'dob': ""},
+        {'id': '2', 'name': "Mary May", 'age': "1", 'col': "blue", 'dob': "14/05/1982"},
+        {'id': '3', 'name': "Christine Lobowski", 'age': "42", 'col': "green", 'dob': "22/05/1982"},
+        {'id': '4', 'name': "Brendon Philips", 'age': "125", 'col': "orange", 'dob': "01/08/1980"},
+        {'id': '5', 'name': "Margret Marmajuke", 'age': "16", 'col': "yellow", 'dob': "31/01/1999"},
+    ]
+    # tabledata = [
+    #     [1, "Oli Bob", "12", "red", ""],
+    #     [1, "Oli Bob", "12", "red", ""],
+    #     [1, "Oli Bob", "12", "red", ""],
+    #
+    # ]
+
+    return tabledata
 
 
 @app.route('/update', methods=['POST'])
@@ -29,8 +198,8 @@ def update():
         row_id = int(request.form['row_id'])
         column_id = int(request.form['column_id'])
         value = request.form['value']
-
-        print(f"Received data - row_id: {row_id}, column_id: {column_id}, value: {value}")
+        print('lol')
+        # print(f"Received data - row_id: {row_id}, column_id: {column_id}, value: {value}")
 
         # Update the dataframe
         # data.at[row_id, column_name] = value
@@ -39,6 +208,29 @@ def update():
         # data.to_csv('data.csv', index=False, header=False)
 
         return jsonify(success=True)
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify(success=False, error=str(e))
+
+
+@app.route('/update_table_players', methods=['POST'])
+def update_table_players():
+    db_connection = get_db_connection()
+    cursor = db_connection.cursor()
+    try:
+        print(request.json)
+        d = request.json
+        print(type(d))
+        fio = d['playerFIO']
+        player_id = d['playerName']
+
+        query = 'insert into players (fio, player_id) values (?, ?)'
+        cursor.execute(query, (fio, player_id))
+        db_connection.commit()
+
+        response = {"success": True}
+        return jsonify(response)
+
     except Exception as e:
         print(f"Error: {e}")
         return jsonify(success=False, error=str(e))

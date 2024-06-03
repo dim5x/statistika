@@ -5,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Статистика</title>
     <link rel="stylesheet" href="static/css/styles.css">
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+
+    <link href="https://unpkg.com/tabulator-tables@5.0.7/dist/css/tabulator.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/tabulator-tables@5.0.7/dist/js/tabulator.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 
 </head>
 <body>
@@ -21,32 +24,8 @@
 <div class="content">
     <section id="table">
 
-        <table id="data" border="1" class="dataframe data" style="width: 50%">
-            <thead>
+        <div id="table_main"></div>
 
-            <tr>
-                <th>Название</th>
-                <th>Сумма</th>
-                <th>07.03.2024</th>
-                <th>14.03.2024</th>
-                <th>21.03.2024</th>
-                <th>28.03.2024</th>
-                <th>04.04.2024</th>
-                <th>11.04.2024</th>
-                <th>18.04.2024</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for row in rows %}
-            <tr>
-                {% for cell in row %}
-                <td>{{ cell }}</td>
-                {% endfor %}
-            </tr>
-
-            {% endfor %}
-            </tbody>
-        </table>
     </section>
 
     <section id="add-game">
@@ -62,15 +41,24 @@
     </section>
 
     <section id="add-player">
-        <h1>Добавить игрока</h1>
+        <h1>Добавить игрока:</h1>
         <form id="player-form" method="post">
             <div>
-                <label for="player-name">ID игрока:</label>
-                <input type="text" id="player-name" name="player-name">
-                <button type="submit">Добавить</button>
+                <label for="player-fio">ФИО игрока:</label>
+                <input type="text" id="player-fio" name="player-fio" required autocomplete="off" autofocus>
             </div>
+            <div>
+                <label for="player-name">ID игрока:</label>
+                <input type="text" id="player-name" name="player-name" required autocomplete="off">
 
+            </div>
+            <button type="submit">Добавить</button>
         </form>
+        <br>
+        <h1>Таблица игроков:</h1>
+        <div id="example-table"></div>
+        <button id="update-button">Update Data</button>
+
     </section>
 
 
@@ -87,85 +75,8 @@
     </section>
 </div>
 
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- DataTables JS -->
-<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" charset="utf8"
-        src="https://cdnjs.cloudflare.com/ajax/libs/jeditable.js/2.0.19/jquery.jeditable.min.js"></script>
-<script>
-    $(document).ready(function () {
-        // var table = $('.data').DataTable();
-        var table = $('#data').DataTable();
+<script src="/static/js/table_players.js"></script>
+<script src="/static/js/table_main.js"></script>
 
-        // Добавление нового поля ввода при нажатии на кнопку
-        let inputCount = 1;
-        $('#add-input').click(function () {
-            inputCount++;
-            $('#input-container').append(
-                '<div class="input-group">' +
-                '<label for="game-name-' + inputCount + '">ID пакета: </label>' +
-                '<input type="text" id="game-name-' + inputCount + '" name="game-name[]">' +
-                '</div>'
-            );
-        });
-
-        // Обработка отправки формы
-        $('#game-form').submit(function (event) {
-            event.preventDefault(); // Отмена стандартного действия отправки формы
-            // Сбор значений всех полей ввода
-            let gameNames = [];
-            $('input[name="game-name[]"]').each(function () {
-                gameNames.push($(this).val());
-            });
-            // Дальнейшие действия с данными (например, отправка на сервер)
-            console.log(gameNames);
-            // Здесь можно выполнить дополнительные действия с данными (например, отправка на сервер)
-        });
-
-        $('#player-form').submit(function (event) {
-            event.preventDefault(); // Отмена стандартного действия отправки формы
-            alert("OK");
-            console.log('OK');
-        });
-
-        $('#team-form').submit(function (event) {
-            event.preventDefault(); // Отмена стандартного действия отправки формы
-            alert("OK");
-            console.log('OK');
-        });
-
-        // Make cells editable
-        $('.data tbody td').editable(function (value, settings) {
-            var cell = table.cell(this);
-            var aPos = cell.index();
-
-            $.ajax({
-                type: "POST",
-                url: "/update",
-                data: {
-                    row_id: aPos.row,
-                    column_id: aPos.column,
-                    // column_name: table.column(aPos.column).header().innerText,
-                    value: value
-                },
-                success: function (response) {
-                    if (response.success) {
-                        cell.data(value).draw();
-                    } else {
-                        alert("Update failed: " + response.error);
-                    }
-                },
-                error: function () {
-                    alert("An error occurred while updating the cell.");
-                }
-            });
-
-            return value;
-        }, {
-            "height": "14px"
-        });
-    });
-</script>
 </body>
 </html>
