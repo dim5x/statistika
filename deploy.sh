@@ -37,7 +37,7 @@ pip install -r requirements.txt
 deactivate
 
 echo "  Виртуальное окружение создано."
-echo "****************************"
+echo ""
 
 echo 'Cконфигурируем сервис:'
 echo '  Создадим ссылку на файл stat.service...'
@@ -49,7 +49,7 @@ echo '    OK.'
 echo '  Обновим конфигурацию systemd...'
 systemctl daemon-reload
 echo '    OK.'
-echo '****************************'
+echo ''
 
 
 echo 'Добавим в автозагрузку...'
