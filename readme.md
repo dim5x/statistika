@@ -27,6 +27,6 @@ id : team_name  : Сумма  : 07-03-24 : 14-03-24
 ```
 
 
-Команда развёртывания / уствновки:
+Команда развёртывания / установки:
 
     git clone https://github.com/dim5x/statistika.git && cd statistika && chmod +x deploy.sh && sudo ./deploy.sh
