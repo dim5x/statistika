@@ -206,3 +206,6 @@ label, input, button {
 #set_result_button {
 
 }
+#example-table{
+     width: max-content;
+}

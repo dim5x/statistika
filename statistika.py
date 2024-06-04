@@ -54,11 +54,22 @@ def get_columns():
 
     # Цикл для преобразования каждого элемента массива строк в объект
     for column in columns[1:]:
+        if column == "Сумма_2":
+            transformed_columns.append({
+                "title": column,
+                "field": column,
+                "editor": "input",
+                "sorter": "number",
+                'hozAlign': "center",
+
+            })
+            continue
         transformed_columns.append({
             "title": column,
             "field": column,
-            "editor": "input"  # if column == "team_name" else "number"
+            "editor": "input",  # if column == "team_name" else "number"
             # Пример условной логики для определения значения editor
+
         })
 
     # Вывод преобразованных объектов
@@ -105,21 +116,60 @@ def packet():
             print(f'{answer=}')
             print('\n'.join(answer))
     return jsonify(success=True, data=''.join(answer))
-    # dat = ['В турнире 10179 играл(и): <a href="https://rating.maii.li/b/player/172425>Наталья Вишнякова</a><br>',
-    #        'В турнире 10179 играл(и): <a href="https://rating.maii.li/b/player/59778>Леонов Александр</a><br>',
-    #        'В турнире 10179 играл(и): <a href="https://rating.maii.li/b/player/172423>Максим Чечекин</a><br>']
 
-
-# /    return jsonify(success=True, data='<a href="https://rating.maii.li/b/player/172423">test</a>')
-# return jsonify(success=True, data=','.join(dat))
-#
 
 @app.route('/result', methods=['POST'])
 def result():
-    # db_connection = get_db_connection()
-    # cursor = db_connection.cursor()
+    db_connection = get_db_connection()
+    cursor = db_connection.cursor()
     print('result')
     print(request.json)
+
+    # Получение названий всех колонок
+    cursor.execute("PRAGMA table_info(teams_scores)")
+    columns = [info[1] for info in cursor.fetchall()]
+
+    # Определение колонок для суммирования (те, что имеют формат даты)
+    date_columns = [col for col in columns if "-" in col]
+
+    # Создание части запроса для суммирования значений этих колонок
+    sum_expression = " + ".join([f'COALESCE("{col}", 0)' for col in date_columns])
+
+    # Создание части запроса для суммирования значений этих колонок без двух наименьших значений
+    sum_minus_two_least_expression = f"""
+        SELECT ({sum_expression}) - 
+        COALESCE((SELECT SUM(val) FROM (
+            SELECT val FROM (
+                SELECT {', '.join([f'COALESCE("{col}", 0)' for col in date_columns])} AS val
+                FROM main.teams_scores t2
+                WHERE t2.id = teams_scores.id AND t2.team_name NOT LIKE '%_q%'
+            ) 
+            ORDER BY val LIMIT 2
+        )), 0)
+        FROM main.teams_scores t3
+        WHERE t3.id = teams_scores.id AND t3.team_name NOT LIKE '%_q%'
+    """
+    print(f'{sum_minus_two_least_expression=}')
+    # Генерация полного SQL-запроса для обновления
+    sql_update_query = f"""
+    UPDATE main.teams_scores
+    SET Сумма = (
+        SELECT {sum_expression}
+        FROM main.teams_scores t2
+        WHERE t2.id = teams_scores.id AND t2.team_name NOT LIKE '%_q%'
+    ),
+    Сумма_2 = (
+        {sum_minus_two_least_expression}
+    )
+    WHERE team_name NOT LIKE '%_q%';
+    """
+
+    # Выполнение SQL-запроса
+    cursor.execute(sql_update_query)
+    db_connection.commit()
+
+    # Закрытие соединения
+    # conn.close()
 
     # query = "SELECT player_id, fio FROM main.players"
     # players_data = cursor.execute(query).fetchall()

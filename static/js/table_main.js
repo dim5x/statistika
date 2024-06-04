@@ -23,19 +23,25 @@ fetch('/get_columns')
         let columns = serverColumns.map(column => {
             return {
                 title: column.title,
-                // accessor: function (data) {
-                //     return data[column.field];
-                // },
                 field: column.field,
-                editor: column.editor
+                editor: column.editor,
                 // Другие параметры столбца, если необходимо
+                hozAlign: column.hozAlign,
+                sorter: column.sorter,
+                // dir: column.dir
             };
 
         });
 
         console.log('columns', columns);
-// Создание таблицы
+
+        // Создание таблицы
         let table = new Tabulator("#table_main", {
+
+            initialSort: [
+                {column: "Сумма_2", dir: "desc"}, //sort by this first
+                // {column: "height", dir: "desc"}, //then sort by this second
+            ],
             ajaxURL: "/get_data_for_main_table",
             ajaxConfig: "GET",
             columns: columns,
@@ -43,8 +49,11 @@ fetch('/get_columns')
 
             ajaxResponse: function (url, params, response) {
                 return response;
-            },
+
+                },
+
         });
+
     })
 
 
