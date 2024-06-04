@@ -15,8 +15,8 @@
 <body>
 <div class="sidebar">
     <ul>
-        <li><a href="#table">Таблица</a></li>
-        <li><a href="#add-game">Добавить игру</a></li>
+        <li><a href="#table" id="main_table_link">Таблица</a></li>
+        <li><a href="#add-game">Проверить пакет</a></li>
         <li><a href="#add-player">Добавить игрока</a></li>
         <li><a href="#add-team">Добавить команду</a></li>
     </ul>
@@ -25,19 +25,36 @@
     <section id="table">
 
         <div id="table_main"></div>
+        <br>
+        <button id="set_result_button" type="submit" style="float: right">Внести результаты игры</button>
+
+        <!-- Modal -->
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close" style="float: right;">&times;</span>
+                <h2>Введите результаты игры:</h2>
+                <ul id="team-list">
+                    <!-- Team names will be added dynamically here -->
+                </ul>
+                <button id="send-result" style="float: right;">Отправить</button>
+            </div>
+        </div>
 
     </section>
 
+
     <section id="add-game">
-        <h1>Добавить игру</h1>
+        <h1>Проверить пакет:</h1>
         <form id="game-form" method="post">
             <div id="input-container" class="input-group"> <!-- Добавлен класс "input-group" -->
                 <label for="game-name-1">ID пакета:</label>
                 <input type="text" id="game-name-1" name="game-name[]">
                 <button type="button" id="add-input" class="green-plus">+</button> <!-- Добавлен класс "green-plus" -->
             </div>
-            <button type="submit">Добавить</button>
+            <button id="check_button" type="submit">Проверить</button>
         </form>
+        <br>
+        <div id="serverResponse"></div>
     </section>
 
     <section id="add-player">
@@ -77,6 +94,89 @@
 
 <script src="/static/js/table_players.js"></script>
 <script src="/static/js/table_main.js"></script>
+<script src="/static/js/packet.js"></script>
+
+
+<script>
+    var modal = document.getElementById("myModal");
+    var btn = document.getElementById("set_result_button");
+    var sendBtn = document.getElementById("send-result");
+    var span = document.getElementsByClassName("close")[0];
+    var teamNames; // Переменная для хранения списка имен команд
+
+    btn.onclick = function () {
+        // Очистить существующие элементы
+        document.getElementById("team-list").innerHTML = "";
+
+        // Получить названия команд на основе атрибута 'tabulator-field="team_name"' и исключить первый элемент
+        teamNames = Array.from(document.querySelectorAll("[tabulator-field='team_name']")).map(function (team) {
+            return team.textContent;
+        }).slice(1); // Исключаем первый элемент из массива
+
+        teamNames.forEach(function (name) {
+            var div = document.createElement("div");
+
+            var label = document.createElement("label");
+            label.textContent = name;
+            label.setAttribute("for", "result-" + name);
+            label.setAttribute("class", "modal_label")
+
+            label.style.marginRight = "10px"; // Добавляем отступ между лейблом и полем ввода
+
+            var input = document.createElement("input");
+            input.setAttribute("type", "text");
+            input.setAttribute("id", "result-" + name);
+            input.setAttribute("class", "modal_input")
+            input.setAttribute("autocomplete", "off")
+            input.setAttribute("name", "result-" + name);
+            input.setAttribute("value", "0")
+
+            div.appendChild(label);
+            div.appendChild(input);
+
+            document.getElementById("team-list").appendChild(div);
+        });
+
+        modal.style.display = "block";
+    }
+
+    sendBtn.onclick = function () {
+        var data = {};
+        teamNames.forEach(function (name) {
+            var input = document.getElementById("result-" + name);
+            data[name] = input.value;
+        });
+
+        fetch('/result', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                // Дополнительные действия при успешной отправке данных
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                // Обработка ошибки при отправке данных
+            });
+
+        modal.style.display = "none"; // Закрыть модальное окно после отправки данных
+    }
+
+    span.onclick = function () {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
 
 </body>
 </html>

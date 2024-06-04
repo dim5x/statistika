@@ -71,6 +71,79 @@ def get_columns():
     return jsonify(transformed_columns)
 
 
+@app.route('/packet', methods=['POST'])
+def packet():
+    db_connection = get_db_connection()
+    cursor = db_connection.cursor()
+    print('lol')
+    # print(request.json)
+
+    query = "SELECT player_id, fio FROM main.players"
+    players_data = cursor.execute(query).fetchall()
+    # players_set = set([player[0] for player in players_data])
+    players_dict = {k: v for k, v in players_data}
+    # print(f'{players_dict=}')
+
+    answer = []
+    for i in request.json:
+        # print(f'{i=}')
+        if i:
+            query = 'SELECT player_id from tournaments WHERE tournaments.tournament_id = ?'
+            tournaments_player_id = cursor.execute(query, (int(i),)).fetchall()
+            print(f'{tournaments_player_id=}')
+            if not tournaments_player_id:
+                answer.append(f'Турнир {i} в базе не найден.')
+                continue
+            tournaments_player_id_set = set(tournaments_player_id[0][0].split(';'))
+            print(f'{tournaments_player_id_set=}')
+            intersection = tournaments_player_id_set.intersection(players_dict.keys())
+
+            # https: // rating.maii.li / b / player / 172423 /
+            if intersection:
+                answer.append(f'В турнире {i} играл(и): {[players_dict[i] for i in intersection]}')
+            else:
+                answer.append(f'В турнире {i} никто не играл.')
+    print(f'{answer=}')
+    print('\n'.join(answer))
+    return jsonify(success=True, data='\n'.join(answer))
+
+@app.route('/result', methods=['POST'])
+def result():
+    # db_connection = get_db_connection()
+    # cursor = db_connection.cursor()
+    print('result')
+    print(request.json)
+
+    # query = "SELECT player_id, fio FROM main.players"
+    # players_data = cursor.execute(query).fetchall()
+    # # players_set = set([player[0] for player in players_data])
+    # players_dict = {k: v for k, v in players_data}
+    # # print(f'{players_dict=}')
+    #
+    # answer = []
+    # for i in request.json:
+    #     # print(f'{i=}')
+    #     if i:
+    #         query = 'SELECT player_id from tournaments WHERE tournaments.tournament_id = ?'
+    #         tournaments_player_id = cursor.execute(query, (int(i),)).fetchall()
+    #         print(f'{tournaments_player_id=}')
+    #         if not tournaments_player_id:
+    #             answer.append(f'Турнир {i} в базе не найден.')
+    #             continue
+    #         tournaments_player_id_set = set(tournaments_player_id[0][0].split(';'))
+    #         print(f'{tournaments_player_id_set=}')
+    #         intersection = tournaments_player_id_set.intersection(players_dict.keys())
+    #
+    #         # https: // rating.maii.li / b / player / 172423 /
+    #         if intersection:
+    #             answer.append(f'В турнире {i} играл(и): {[players_dict[i] for i in intersection]}')
+    #         else:
+    #             answer.append(f'В турнире {i} никто не играл.')
+    # print(f'{answer=}')
+    # print('\n'.join(answer))
+    # return jsonify(success=True, data='\n'.join(answer))
+    return jsonify(success=True)
+
 @app.route('/get_data_for_main_table', methods=['GET'])
 def get_data_for_main_table():
     # Подключение к базе данных SQLite

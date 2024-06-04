@@ -1,7 +1,7 @@
 // Создание таблицы
 var table = new Tabulator("#example-table", {
     // height: 205,
-    layout: "fitColumns",
+    layout: "fitData",
     columns: [
         {title: "ID", field: "id", editor: false},
         {title: "FIO", field: "fio", editor: "input"},
