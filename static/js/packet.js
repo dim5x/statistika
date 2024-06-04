@@ -13,6 +13,27 @@ $(document).ready(function () {
         );
     });
 
+    // function pack(data) {
+    //     console.log('data', typeof(data['data']), data['data']);
+    //     // Получаем список ссылок из переданных данных
+    //     var linkList = data['data'].split(','); // Разбиваем список ссылок по запятым
+    //
+    //     // Находим div, в который мы хотим поместить список ссылок
+    //     var divElement = document.getElementById('serverResponse'); // Замените 'yourDivId' на ID вашего div
+    //
+    //     // Очищаем содержимое div перед добавлением новых элементов
+    //     divElement.innerHTML = '';
+    //     divElement.innerHTML = linkList;
+    //     // Для каждой ссылки создаем элемент <a> и добавляем его в div
+    //     // linkList.forEach(function (link) {
+    //     //     // var linkElement = document.createElement('a');
+    //     //     // linkElement.href = link.trim(); // Убираем лишние пробелы
+    //     //     // linkElement.textContent = link.trim(); // Устанавливаем текст ссылки
+    //     //     divElement.appendChild(link); // Добавляем ссылку в div
+    //     //     divElement.appendChild(document.createElement('br')); // Добавляем перенос строки
+    //     // });
+    // }
+
     // Обработка отправки формы
     $('#game-form').submit(function (event) {
         event.preventDefault(); // Отмена стандартного действия отправки формы
@@ -39,7 +60,10 @@ $(document).ready(function () {
             })
             .then(data => {
                 console.log(data); // Обработка успешного ответа от сервера
-                document.getElementById("serverResponse").innerText = data['data'];
+                d = document.getElementById('serverResponse');
+                d.innerHTML =''
+                d.innerHTML = data['data'].split('\n');
+                // pack(data);
                 // updateTableFromAjax();
             })
             .catch(error => {

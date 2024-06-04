@@ -132,8 +132,8 @@ label, input, button {
 }
 
 #add-game {
-    width: 100%;
-
+    /*width: 100%;*/
+    width: 800px;
 }
 
 #add-player {
@@ -203,6 +203,6 @@ label, input, button {
     width: 50px; /* Ширина поля ввода, можно изменить по вашему усмотрению */
 }
 
-#set_result_button{
+#set_result_button {
 
 }
