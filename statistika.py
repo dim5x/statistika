@@ -351,7 +351,7 @@ def test() -> list:
     return tabledata
 
 
-@app.route('/update_from_github', methods=['POST'])
+@app.route('/update_from_github', methods=['POST', 'GET'])
 def update_from_github() -> jsonify:
     """
     Функция для обновления данных из GitHub.
