@@ -45,7 +45,7 @@ $(document).ready(function () {
         // Дальнейшие действия с данными (например, отправка на сервер)
         console.log(gameNames);
 
-        fetch('/packet', {
+        fetch('/check_packet', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
