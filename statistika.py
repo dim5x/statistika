@@ -12,17 +12,6 @@ app = Flask(__name__)
 CORS(app)
 
 
-# <for test>
-# players = [[1, 'test', 78], [2, 'test2', 145], [3, 'test3', 23], [4, 'test4', 45]]
-#
-# rows = [
-#     [1, 2, 3, 4, 1, 2, 3, 4, 7],
-#     [1, 2, 3, 4, 1, 2, 3, 4, 7],
-#     [1, 2, 3, 4, 1, 2, 3, 4, 7],
-#     [1, 2, 3, 4, 1, 2, 3, 4, 7],
-# ]
-# </for test>
-
 def get_db_connection() -> sqlite3.Connection:
     """
     Функция, которая получает соединение с базой данных.
@@ -34,18 +23,6 @@ def get_db_connection() -> sqlite3.Connection:
     if db_connection is None:
         db_connection = g._database = sqlite3.connect('data.db')
     return db_connection
-
-
-# def set_column_name_to_g() -> None:
-#     db_connection = get_db_connection()
-#     cursor = db_connection.cursor()
-#     cursor.execute('SELECT name FROM pragma_table_info("teams_rating")')
-#     columns = [description[0] for description in cursor.fetchall()]
-#     g._columns = columns
-
-
-# with app.app_context():
-#     set_column_name_to_g()
 
 
 @app.teardown_appcontext
@@ -260,13 +237,13 @@ def set_result():
 
     # Создание части запроса для суммирования значений этих колонок без двух наименьших значений
     sum_minus_two_least_expression = f"""
-        SELECT ({sum_expression}) - 
+        SELECT ({sum_expression}) -
         COALESCE((SELECT SUM(val) FROM (
             SELECT val FROM (
                 SELECT {', '.join([f'COALESCE("{col}", 0)' for col in date_columns])} AS val
                 FROM main."teams_scores-mark_for_deletion" t2
                 WHERE t2.id = teams_scores.id AND t2.team_name NOT LIKE '%_q%'
-            ) 
+            )
             ORDER BY val LIMIT 2
         )), 0)
         FROM main."teams_scores-mark_for_deletion" t3
@@ -381,12 +358,13 @@ def update_from_github() -> jsonify:
     Эта функция скачивает последние изменения в репозитории и обновляет проект.
     """
     print(request.json)
-
+    cmd = 'echo "kek" > lol.kek'
+    os.system(cmd)
     # cmd = 'sudo touch lol.kek'
     cmd = 'sudo ./update.sh'
     os.system(cmd)
     print(cmd)
-    return jsonify(success=True)
+    return jsonify(success=True, data=request.json)
 
 
 @app.route('/update_table_players', methods=['POST'])
@@ -412,7 +390,6 @@ def update_table_players() -> jsonify:
         response = {"success": True}
         return jsonify(response)
 
-
     except Exception as e:
         print(f"Error: {e}")
         return jsonify(success=False, error=str(e))
@@ -420,3 +397,4 @@ def update_table_players() -> jsonify:
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5555)
+    # app.run(debug=True)
