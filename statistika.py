@@ -381,9 +381,9 @@ def update_from_github() -> jsonify:
     Эта функция скачивает последние изменения в репозитории и обновляет проект.
     """
     print(request.json)
-    # subprocess.run(['git', 'pull'])
-    # subprocess.run(['/bin/bash', 'sudo', 'touch', '!lol.kek'])
-    cmd = 'sudo touch lol.kek'
+
+    # cmd = 'sudo touch lol.kek'
+    cmd = 'sudo ./update.sh'
     os.system(cmd)
     print(cmd)
     return jsonify(success=True)
