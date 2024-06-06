@@ -365,7 +365,7 @@ def update_from_github() -> jsonify:
     os.system(cmd)
     print(cmd)
     # return jsonify(success=True, data=request.json)
-    return request.json
+    return str(request.json)
 
 
 @app.route('/update_table_players', methods=['POST'])
