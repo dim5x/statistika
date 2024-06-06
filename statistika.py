@@ -372,6 +372,17 @@ def test() -> list:
     return tabledata
 
 
+@app.route('/update_from_github', methods=['POST'])
+def update_from_github() -> jsonify:
+    """
+    Функция для обновления данных из GitHub.
+    Эта функция скачивает последние изменения в репозитории и обновляет проект.
+    """
+    print(request.json)
+    # subprocess.run(['git', 'pull'])
+    # subprocess.run(['python', 'statistika.py'])
+    return jsonify(success=True)
+
 @app.route('/update_table_players', methods=['POST'])
 def update_table_players() -> jsonify:
     """

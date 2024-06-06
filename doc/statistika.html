@@ -57,6 +57,9 @@
                     <a class="function" href="#test">test</a>
             </li>
             <li>
+                    <a class="function" href="#update_from_github">update_from_github</a>
+            </li>
+            <li>
                     <a class="function" href="#update_table_players">update_table_players</a>
             </li>
     </ul>
@@ -454,36 +457,47 @@ statistika    </h1>
 </span><span id="L-372"><a href="#L-372"><span class="linenos">372</span></a>    <span class="k">return</span> <span class="n">tabledata</span>
 </span><span id="L-373"><a href="#L-373"><span class="linenos">373</span></a>
 </span><span id="L-374"><a href="#L-374"><span class="linenos">374</span></a>
-</span><span id="L-375"><a href="#L-375"><span class="linenos">375</span></a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/update_table_players&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
-</span><span id="L-376"><a href="#L-376"><span class="linenos">376</span></a><span class="k">def</span> <span class="nf">update_table_players</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">jsonify</span><span class="p">:</span>
+</span><span id="L-375"><a href="#L-375"><span class="linenos">375</span></a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/update_from_github&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+</span><span id="L-376"><a href="#L-376"><span class="linenos">376</span></a><span class="k">def</span> <span class="nf">update_from_github</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">jsonify</span><span class="p">:</span>
 </span><span id="L-377"><a href="#L-377"><span class="linenos">377</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="L-378"><a href="#L-378"><span class="linenos">378</span></a><span class="sd">    Функция для обновления таблицы игроков данными, полученными через POST-запрос.</span>
-</span><span id="L-379"><a href="#L-379"><span class="linenos">379</span></a><span class="sd">    Эта функция добавляет нового игрока в таблицу players, используя его полное имя (fio) и идентификатор игрока.</span>
-</span><span id="L-380"><a href="#L-380"><span class="linenos">380</span></a><span class="sd">    В случае успешного выполнения возвращает JSON-ответ с сообщением об успехе, в противном случае возвращает сообщение об ошибке.</span>
-</span><span id="L-381"><a href="#L-381"><span class="linenos">381</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="L-382"><a href="#L-382"><span class="linenos">382</span></a>    <span class="n">db_connection</span> <span class="o">=</span> <span class="n">get_db_connection</span><span class="p">()</span>
-</span><span id="L-383"><a href="#L-383"><span class="linenos">383</span></a>    <span class="n">cursor</span> <span class="o">=</span> <span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-</span><span id="L-384"><a href="#L-384"><span class="linenos">384</span></a>    <span class="k">try</span><span class="p">:</span>
-</span><span id="L-385"><a href="#L-385"><span class="linenos">385</span></a>        <span class="nb">print</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
-</span><span id="L-386"><a href="#L-386"><span class="linenos">386</span></a>        <span class="n">d</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span>
-</span><span id="L-387"><a href="#L-387"><span class="linenos">387</span></a>        <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
-</span><span id="L-388"><a href="#L-388"><span class="linenos">388</span></a>        <span class="n">fio</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;playerFIO&#39;</span><span class="p">]</span>
-</span><span id="L-389"><a href="#L-389"><span class="linenos">389</span></a>        <span class="n">player_id</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;playerName&#39;</span><span class="p">]</span>
-</span><span id="L-390"><a href="#L-390"><span class="linenos">390</span></a>
-</span><span id="L-391"><a href="#L-391"><span class="linenos">391</span></a>        <span class="n">query</span> <span class="o">=</span> <span class="s1">&#39;insert into players (fio, player_id) values (?, ?)&#39;</span>
-</span><span id="L-392"><a href="#L-392"><span class="linenos">392</span></a>        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">fio</span><span class="p">,</span> <span class="n">player_id</span><span class="p">))</span>
-</span><span id="L-393"><a href="#L-393"><span class="linenos">393</span></a>        <span class="n">db_connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-</span><span id="L-394"><a href="#L-394"><span class="linenos">394</span></a>
-</span><span id="L-395"><a href="#L-395"><span class="linenos">395</span></a>        <span class="n">response</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
-</span><span id="L-396"><a href="#L-396"><span class="linenos">396</span></a>        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
-</span><span id="L-397"><a href="#L-397"><span class="linenos">397</span></a>
-</span><span id="L-398"><a href="#L-398"><span class="linenos">398</span></a>    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span><span id="L-399"><a href="#L-399"><span class="linenos">399</span></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="L-400"><a href="#L-400"><span class="linenos">400</span></a>        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">success</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+</span><span id="L-378"><a href="#L-378"><span class="linenos">378</span></a><span class="sd">    Функция для обновления данных из GitHub.</span>
+</span><span id="L-379"><a href="#L-379"><span class="linenos">379</span></a><span class="sd">    Эта функция скачивает последние изменения в репозитории и обновляет проект.</span>
+</span><span id="L-380"><a href="#L-380"><span class="linenos">380</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-381"><a href="#L-381"><span class="linenos">381</span></a>    <span class="nb">print</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+</span><span id="L-382"><a href="#L-382"><span class="linenos">382</span></a>    <span class="c1"># subprocess.run([&#39;git&#39;, &#39;pull&#39;])</span>
+</span><span id="L-383"><a href="#L-383"><span class="linenos">383</span></a>    <span class="c1"># subprocess.run([&#39;python&#39;, &#39;statistika.py&#39;])</span>
+</span><span id="L-384"><a href="#L-384"><span class="linenos">384</span></a>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">success</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="L-385"><a href="#L-385"><span class="linenos">385</span></a>
+</span><span id="L-386"><a href="#L-386"><span class="linenos">386</span></a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/update_table_players&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+</span><span id="L-387"><a href="#L-387"><span class="linenos">387</span></a><span class="k">def</span> <span class="nf">update_table_players</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">jsonify</span><span class="p">:</span>
+</span><span id="L-388"><a href="#L-388"><span class="linenos">388</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="L-389"><a href="#L-389"><span class="linenos">389</span></a><span class="sd">    Функция для обновления таблицы игроков данными, полученными через POST-запрос.</span>
+</span><span id="L-390"><a href="#L-390"><span class="linenos">390</span></a><span class="sd">    Эта функция добавляет нового игрока в таблицу players, используя его полное имя (fio) и идентификатор игрока.</span>
+</span><span id="L-391"><a href="#L-391"><span class="linenos">391</span></a><span class="sd">    В случае успешного выполнения возвращает JSON-ответ с сообщением об успехе, в противном случае возвращает сообщение об ошибке.</span>
+</span><span id="L-392"><a href="#L-392"><span class="linenos">392</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="L-393"><a href="#L-393"><span class="linenos">393</span></a>    <span class="n">db_connection</span> <span class="o">=</span> <span class="n">get_db_connection</span><span class="p">()</span>
+</span><span id="L-394"><a href="#L-394"><span class="linenos">394</span></a>    <span class="n">cursor</span> <span class="o">=</span> <span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span><span id="L-395"><a href="#L-395"><span class="linenos">395</span></a>    <span class="k">try</span><span class="p">:</span>
+</span><span id="L-396"><a href="#L-396"><span class="linenos">396</span></a>        <span class="nb">print</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+</span><span id="L-397"><a href="#L-397"><span class="linenos">397</span></a>        <span class="n">d</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span>
+</span><span id="L-398"><a href="#L-398"><span class="linenos">398</span></a>        <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+</span><span id="L-399"><a href="#L-399"><span class="linenos">399</span></a>        <span class="n">fio</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;playerFIO&#39;</span><span class="p">]</span>
+</span><span id="L-400"><a href="#L-400"><span class="linenos">400</span></a>        <span class="n">player_id</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;playerName&#39;</span><span class="p">]</span>
 </span><span id="L-401"><a href="#L-401"><span class="linenos">401</span></a>
-</span><span id="L-402"><a href="#L-402"><span class="linenos">402</span></a>
-</span><span id="L-403"><a href="#L-403"><span class="linenos">403</span></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-</span><span id="L-404"><a href="#L-404"><span class="linenos">404</span></a>    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5555</span><span class="p">)</span>
+</span><span id="L-402"><a href="#L-402"><span class="linenos">402</span></a>        <span class="n">query</span> <span class="o">=</span> <span class="s1">&#39;insert into players (fio, player_id) values (?, ?)&#39;</span>
+</span><span id="L-403"><a href="#L-403"><span class="linenos">403</span></a>        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">fio</span><span class="p">,</span> <span class="n">player_id</span><span class="p">))</span>
+</span><span id="L-404"><a href="#L-404"><span class="linenos">404</span></a>        <span class="n">db_connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span><span id="L-405"><a href="#L-405"><span class="linenos">405</span></a>
+</span><span id="L-406"><a href="#L-406"><span class="linenos">406</span></a>        <span class="n">response</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+</span><span id="L-407"><a href="#L-407"><span class="linenos">407</span></a>        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+</span><span id="L-408"><a href="#L-408"><span class="linenos">408</span></a>
+</span><span id="L-409"><a href="#L-409"><span class="linenos">409</span></a>    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span id="L-410"><a href="#L-410"><span class="linenos">410</span></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="L-411"><a href="#L-411"><span class="linenos">411</span></a>        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">success</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+</span><span id="L-412"><a href="#L-412"><span class="linenos">412</span></a>
+</span><span id="L-413"><a href="#L-413"><span class="linenos">413</span></a>
+</span><span id="L-414"><a href="#L-414"><span class="linenos">414</span></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+</span><span id="L-415"><a href="#L-415"><span class="linenos">415</span></a>    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5555</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -799,7 +813,7 @@ statistika    </h1>
                     <div class="decorator">@app.route(&#39;/check_packet&#39;, methods=[&#39;POST&#39;])</div>
 
         <span class="def">def</span>
-        <span class="name">check_packet</span><span class="signature pdoc-code condensed">(<span class="return-annotation">) -> <span class="o">&lt;</span><span class="n">function</span> <span class="n">jsonify</span> <span class="n">at</span> <span class="mh">0x000001E704289B20</span><span class="o">&gt;</span>:</span></span>
+        <span class="name">check_packet</span><span class="signature pdoc-code condensed">(<span class="return-annotation">) -> <span class="o">&lt;</span><span class="n">function</span> <span class="n">jsonify</span> <span class="n">at</span> <span class="mh">0x000001A4947C9B20</span><span class="o">&gt;</span>:</span></span>
 
                 <label class="view-source-button" for="check_packet-view-source"><span>View Source</span></label>
 
@@ -1024,44 +1038,75 @@ statistika    </h1>
     
 
                 </section>
+                <section id="update_from_github">
+                            <input id="update_from_github-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+                    <div class="decorator">@app.route(&#39;/update_from_github&#39;, methods=[&#39;POST&#39;])</div>
+
+        <span class="def">def</span>
+        <span class="name">update_from_github</span><span class="signature pdoc-code condensed">(<span class="return-annotation">) -> <span class="o">&lt;</span><span class="n">function</span> <span class="n">jsonify</span> <span class="n">at</span> <span class="mh">0x000001A4947C9B20</span><span class="o">&gt;</span>:</span></span>
+
+                <label class="view-source-button" for="update_from_github-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#update_from_github"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="update_from_github-376"><a href="#update_from_github-376"><span class="linenos">376</span></a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/update_from_github&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+</span><span id="update_from_github-377"><a href="#update_from_github-377"><span class="linenos">377</span></a><span class="k">def</span> <span class="nf">update_from_github</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">jsonify</span><span class="p">:</span>
+</span><span id="update_from_github-378"><a href="#update_from_github-378"><span class="linenos">378</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="update_from_github-379"><a href="#update_from_github-379"><span class="linenos">379</span></a><span class="sd">    Функция для обновления данных из GitHub.</span>
+</span><span id="update_from_github-380"><a href="#update_from_github-380"><span class="linenos">380</span></a><span class="sd">    Эта функция скачивает последние изменения в репозитории и обновляет проект.</span>
+</span><span id="update_from_github-381"><a href="#update_from_github-381"><span class="linenos">381</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="update_from_github-382"><a href="#update_from_github-382"><span class="linenos">382</span></a>    <span class="nb">print</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+</span><span id="update_from_github-383"><a href="#update_from_github-383"><span class="linenos">383</span></a>    <span class="c1"># subprocess.run([&#39;git&#39;, &#39;pull&#39;])</span>
+</span><span id="update_from_github-384"><a href="#update_from_github-384"><span class="linenos">384</span></a>    <span class="c1"># subprocess.run([&#39;python&#39;, &#39;statistika.py&#39;])</span>
+</span><span id="update_from_github-385"><a href="#update_from_github-385"><span class="linenos">385</span></a>    <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">success</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Функция для обновления данных из GitHub.
+Эта функция скачивает последние изменения в репозитории и обновляет проект.</p>
+</div>
+
+
+                </section>
                 <section id="update_table_players">
                             <input id="update_table_players-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
                     <div class="decorator">@app.route(&#39;/update_table_players&#39;, methods=[&#39;POST&#39;])</div>
 
         <span class="def">def</span>
-        <span class="name">update_table_players</span><span class="signature pdoc-code condensed">(<span class="return-annotation">) -> <span class="o">&lt;</span><span class="n">function</span> <span class="n">jsonify</span> <span class="n">at</span> <span class="mh">0x000001E704289B20</span><span class="o">&gt;</span>:</span></span>
+        <span class="name">update_table_players</span><span class="signature pdoc-code condensed">(<span class="return-annotation">) -> <span class="o">&lt;</span><span class="n">function</span> <span class="n">jsonify</span> <span class="n">at</span> <span class="mh">0x000001A4947C9B20</span><span class="o">&gt;</span>:</span></span>
 
                 <label class="view-source-button" for="update_table_players-view-source"><span>View Source</span></label>
 
     </div>
     <a class="headerlink" href="#update_table_players"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="update_table_players-376"><a href="#update_table_players-376"><span class="linenos">376</span></a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/update_table_players&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
-</span><span id="update_table_players-377"><a href="#update_table_players-377"><span class="linenos">377</span></a><span class="k">def</span> <span class="nf">update_table_players</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">jsonify</span><span class="p">:</span>
-</span><span id="update_table_players-378"><a href="#update_table_players-378"><span class="linenos">378</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="update_table_players-379"><a href="#update_table_players-379"><span class="linenos">379</span></a><span class="sd">    Функция для обновления таблицы игроков данными, полученными через POST-запрос.</span>
-</span><span id="update_table_players-380"><a href="#update_table_players-380"><span class="linenos">380</span></a><span class="sd">    Эта функция добавляет нового игрока в таблицу players, используя его полное имя (fio) и идентификатор игрока.</span>
-</span><span id="update_table_players-381"><a href="#update_table_players-381"><span class="linenos">381</span></a><span class="sd">    В случае успешного выполнения возвращает JSON-ответ с сообщением об успехе, в противном случае возвращает сообщение об ошибке.</span>
-</span><span id="update_table_players-382"><a href="#update_table_players-382"><span class="linenos">382</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="update_table_players-383"><a href="#update_table_players-383"><span class="linenos">383</span></a>    <span class="n">db_connection</span> <span class="o">=</span> <span class="n">get_db_connection</span><span class="p">()</span>
-</span><span id="update_table_players-384"><a href="#update_table_players-384"><span class="linenos">384</span></a>    <span class="n">cursor</span> <span class="o">=</span> <span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-</span><span id="update_table_players-385"><a href="#update_table_players-385"><span class="linenos">385</span></a>    <span class="k">try</span><span class="p">:</span>
-</span><span id="update_table_players-386"><a href="#update_table_players-386"><span class="linenos">386</span></a>        <span class="nb">print</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
-</span><span id="update_table_players-387"><a href="#update_table_players-387"><span class="linenos">387</span></a>        <span class="n">d</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span>
-</span><span id="update_table_players-388"><a href="#update_table_players-388"><span class="linenos">388</span></a>        <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
-</span><span id="update_table_players-389"><a href="#update_table_players-389"><span class="linenos">389</span></a>        <span class="n">fio</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;playerFIO&#39;</span><span class="p">]</span>
-</span><span id="update_table_players-390"><a href="#update_table_players-390"><span class="linenos">390</span></a>        <span class="n">player_id</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;playerName&#39;</span><span class="p">]</span>
-</span><span id="update_table_players-391"><a href="#update_table_players-391"><span class="linenos">391</span></a>
-</span><span id="update_table_players-392"><a href="#update_table_players-392"><span class="linenos">392</span></a>        <span class="n">query</span> <span class="o">=</span> <span class="s1">&#39;insert into players (fio, player_id) values (?, ?)&#39;</span>
-</span><span id="update_table_players-393"><a href="#update_table_players-393"><span class="linenos">393</span></a>        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">fio</span><span class="p">,</span> <span class="n">player_id</span><span class="p">))</span>
-</span><span id="update_table_players-394"><a href="#update_table_players-394"><span class="linenos">394</span></a>        <span class="n">db_connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-</span><span id="update_table_players-395"><a href="#update_table_players-395"><span class="linenos">395</span></a>
-</span><span id="update_table_players-396"><a href="#update_table_players-396"><span class="linenos">396</span></a>        <span class="n">response</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
-</span><span id="update_table_players-397"><a href="#update_table_players-397"><span class="linenos">397</span></a>        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
-</span><span id="update_table_players-398"><a href="#update_table_players-398"><span class="linenos">398</span></a>
-</span><span id="update_table_players-399"><a href="#update_table_players-399"><span class="linenos">399</span></a>    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span><span id="update_table_players-400"><a href="#update_table_players-400"><span class="linenos">400</span></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="update_table_players-401"><a href="#update_table_players-401"><span class="linenos">401</span></a>        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">success</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="update_table_players-387"><a href="#update_table_players-387"><span class="linenos">387</span></a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/update_table_players&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+</span><span id="update_table_players-388"><a href="#update_table_players-388"><span class="linenos">388</span></a><span class="k">def</span> <span class="nf">update_table_players</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">jsonify</span><span class="p">:</span>
+</span><span id="update_table_players-389"><a href="#update_table_players-389"><span class="linenos">389</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="update_table_players-390"><a href="#update_table_players-390"><span class="linenos">390</span></a><span class="sd">    Функция для обновления таблицы игроков данными, полученными через POST-запрос.</span>
+</span><span id="update_table_players-391"><a href="#update_table_players-391"><span class="linenos">391</span></a><span class="sd">    Эта функция добавляет нового игрока в таблицу players, используя его полное имя (fio) и идентификатор игрока.</span>
+</span><span id="update_table_players-392"><a href="#update_table_players-392"><span class="linenos">392</span></a><span class="sd">    В случае успешного выполнения возвращает JSON-ответ с сообщением об успехе, в противном случае возвращает сообщение об ошибке.</span>
+</span><span id="update_table_players-393"><a href="#update_table_players-393"><span class="linenos">393</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="update_table_players-394"><a href="#update_table_players-394"><span class="linenos">394</span></a>    <span class="n">db_connection</span> <span class="o">=</span> <span class="n">get_db_connection</span><span class="p">()</span>
+</span><span id="update_table_players-395"><a href="#update_table_players-395"><span class="linenos">395</span></a>    <span class="n">cursor</span> <span class="o">=</span> <span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span><span id="update_table_players-396"><a href="#update_table_players-396"><span class="linenos">396</span></a>    <span class="k">try</span><span class="p">:</span>
+</span><span id="update_table_players-397"><a href="#update_table_players-397"><span class="linenos">397</span></a>        <span class="nb">print</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>
+</span><span id="update_table_players-398"><a href="#update_table_players-398"><span class="linenos">398</span></a>        <span class="n">d</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span>
+</span><span id="update_table_players-399"><a href="#update_table_players-399"><span class="linenos">399</span></a>        <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+</span><span id="update_table_players-400"><a href="#update_table_players-400"><span class="linenos">400</span></a>        <span class="n">fio</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;playerFIO&#39;</span><span class="p">]</span>
+</span><span id="update_table_players-401"><a href="#update_table_players-401"><span class="linenos">401</span></a>        <span class="n">player_id</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;playerName&#39;</span><span class="p">]</span>
+</span><span id="update_table_players-402"><a href="#update_table_players-402"><span class="linenos">402</span></a>
+</span><span id="update_table_players-403"><a href="#update_table_players-403"><span class="linenos">403</span></a>        <span class="n">query</span> <span class="o">=</span> <span class="s1">&#39;insert into players (fio, player_id) values (?, ?)&#39;</span>
+</span><span id="update_table_players-404"><a href="#update_table_players-404"><span class="linenos">404</span></a>        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="n">fio</span><span class="p">,</span> <span class="n">player_id</span><span class="p">))</span>
+</span><span id="update_table_players-405"><a href="#update_table_players-405"><span class="linenos">405</span></a>        <span class="n">db_connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span><span id="update_table_players-406"><a href="#update_table_players-406"><span class="linenos">406</span></a>
+</span><span id="update_table_players-407"><a href="#update_table_players-407"><span class="linenos">407</span></a>        <span class="n">response</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+</span><span id="update_table_players-408"><a href="#update_table_players-408"><span class="linenos">408</span></a>        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+</span><span id="update_table_players-409"><a href="#update_table_players-409"><span class="linenos">409</span></a>
+</span><span id="update_table_players-410"><a href="#update_table_players-410"><span class="linenos">410</span></a>    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span id="update_table_players-411"><a href="#update_table_players-411"><span class="linenos">411</span></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="update_table_players-412"><a href="#update_table_players-412"><span class="linenos">412</span></a>        <span class="k">return</span> <span class="n">jsonify</span><span class="p">(</span><span class="n">success</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
 </span></pre></div>
 
 
