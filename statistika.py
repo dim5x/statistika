@@ -385,6 +385,7 @@ def update_from_github() -> jsonify:
     # subprocess.run(['/bin/bash', 'sudo', 'touch', '!lol.kek'])
     cmd = 'sudo touch lol.kek'
     os.system(cmd)
+    print(cmd)
     return jsonify(success=True)
 
 
