@@ -412,6 +412,7 @@ def update_table_players() -> jsonify:
         response = {"success": True}
         return jsonify(response)
 
+
     except Exception as e:
         print(f"Error: {e}")
         return jsonify(success=False, error=str(e))
