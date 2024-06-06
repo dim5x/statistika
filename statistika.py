@@ -384,6 +384,7 @@ def update_from_github() -> jsonify:
     subprocess.run(['/bin/bash', 'sudo', 'touch', '!lol.kek'])
     return jsonify(success=True)
 
+
 @app.route('/update_table_players', methods=['POST'])
 def update_table_players() -> jsonify:
     """
