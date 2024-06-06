@@ -1,4 +1,5 @@
 import json
+import os
 import sqlite3
 import subprocess
 
@@ -381,7 +382,9 @@ def update_from_github() -> jsonify:
     """
     print(request.json)
     # subprocess.run(['git', 'pull'])
-    subprocess.run(['/bin/bash', 'sudo', 'touch', '!lol.kek'])
+    # subprocess.run(['/bin/bash', 'sudo', 'touch', '!lol.kek'])
+    cmd = 'sudo touch lol.kek'
+    os.system(cmd)
     return jsonify(success=True)
 
 
