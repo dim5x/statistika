@@ -357,7 +357,7 @@ def update_from_github() -> jsonify:
     Функция для обновления данных из GitHub.
     Эта функция скачивает последние изменения в репозитории и обновляет проект.
     """
-    print(request.json)
+    # print(request.json)
     cmd = 'echo "kek" > lol.kek'
     os.system(cmd)
     # cmd = 'sudo touch lol.kek'
@@ -365,7 +365,7 @@ def update_from_github() -> jsonify:
     os.system(cmd)
     print(cmd)
     # return jsonify(success=True, data=request.json)
-    return str(request.json)
+    return str(request.date)
 
 
 @app.route('/update_table_players', methods=['POST'])
