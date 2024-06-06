@@ -1,7 +1,7 @@
 // Создание таблицы
 var table = new Tabulator("#example-table", {
     // height: 205,
-    width: "100%",
+    // width: "100%",
     layout: "fitData",
     columns: [
         {title: "ID", field: "id", editor: false},
@@ -14,20 +14,6 @@ var table = new Tabulator("#example-table", {
     ajaxResponse: function (url, params, response) {
         return response;
     },
-});
-
-// Обновление данных
-document.getElementById('update-button').addEventListener('click', function () {
-    var updatedData = table.getData();
-    $.ajax({
-        url: 'http://127.0.0.1:5000/update',
-        type: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(updatedData),
-        success: function (response) {
-            alert('Data updated successfully!');
-        }
-    });
 });
 
 // Функция для обновления данных в таблице через AJAX и перерисовки

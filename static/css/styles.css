@@ -206,6 +206,22 @@ label, input, button {
 #set_result_button {
 
 }
-#example-table{
-     width: max-content;
+
+#example-table {
+    width: max-content;
+}
+
+@media screen and (max-width: 600px) {
+    body {
+        font-size: 18px;
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .content {
+        margin: 0;
+        width: 100%;
+    }
 }

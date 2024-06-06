@@ -39,7 +39,7 @@ fetch('/get_columns')
         let table = new Tabulator("#table_main", {
 
             initialSort: [
-                {column: "Сумма_2", dir: "desc"}, //sort by this first
+                {column: "summa_2", dir: "desc"}, //sort by this first
                 // {column: "height", dir: "desc"}, //then sort by this second
             ],
             ajaxURL: "/get_data_for_main_table",

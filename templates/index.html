@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Статистика</title>
     <link rel="stylesheet" href="static/css/styles.css">
-<!--    <link rel="stylesheet" href="static/css/minify_styles.css">-->
+    <!--    <link rel="stylesheet" href="static/css/minify_styles.css">-->
 
     <link href="https://unpkg.com/tabulator-tables@5.0.7/dist/css/tabulator.min.css" rel="stylesheet">
     <script src="https://unpkg.com/tabulator-tables@5.0.7/dist/js/tabulator.min.js"></script>
@@ -13,7 +13,9 @@
 
 
 </head>
+
 <body>
+
 <div class="sidebar">
     <ul>
         <li><a href="#table" id="main_table_link">Таблица</a></li>
@@ -22,6 +24,7 @@
         <li><a href="#add-team">Добавить команду</a></li>
     </ul>
 </div>
+
 <div class="content">
     <section id="table">
 
@@ -42,7 +45,6 @@
         </div>
 
     </section>
-
 
     <section id="add-game">
         <h1>Проверить пакет:</h1>
@@ -79,7 +81,6 @@
 
     </section>
 
-
     <section id="add-team">
         <h1>Добавить команду</h1>
         <form id="team-form" method="post">
@@ -89,99 +90,26 @@
 
                 <button type="submit">Добавить</button>
             </div>
+            <br>
+            <h1>Таблица команд:</h1>
+            <div id="table_teams"></div>
         </form>
     </section>
 </div>
 
-<script src="/static/js/table_players.js"></script>
-<script src="/static/js/table_main.js"></script>
-<script src="/static/js/packet.js"></script>
 
-<!--MINIFY-->
+<!--SCRIPTS-->
+<script src="/static/js/table_main.js"></script>
+<script src="/static/js/table_players.js"></script>
+<script src="/static/js/table_teams.js"></script>
+<script src="/static/js/packet.js"></script>
+<script src="/static/js/modal.js"></script>
+
+<!--MINIFY SCRIPTS VERSION-->
 <!--<script src="/static/js/minify_table_main.js"></script>-->
 <!--<script src="/static/js/minify_table_players.js"></script>-->
 <!--<script src="/static/js/minify_packet.js"></script>-->
 
-<script>
-    var modal = document.getElementById("myModal");
-    var btn = document.getElementById("set_result_button");
-    var sendBtn = document.getElementById("send-result");
-    var span = document.getElementsByClassName("close")[0];
-    var teamNames; // Переменная для хранения списка имен команд
-
-    btn.onclick = function () {
-        // Очистить существующие элементы
-        document.getElementById("team-list").innerHTML = "";
-
-        // Получить названия команд на основе атрибута 'tabulator-field="team_name"' и исключить первый элемент
-        teamNames = Array.from(document.querySelectorAll("[tabulator-field='team_name']")).map(function (team) {
-            return team.textContent;
-        }).slice(1); // Исключаем первый элемент из массива
-
-        teamNames.forEach(function (name) {
-            var div = document.createElement("div");
-
-            var label = document.createElement("label");
-            label.textContent = name;
-            label.setAttribute("for", "result-" + name);
-            label.setAttribute("class", "modal_label")
-
-            label.style.marginRight = "10px"; // Добавляем отступ между лейблом и полем ввода
-
-            var input = document.createElement("input");
-            input.setAttribute("type", "text");
-            input.setAttribute("id", "result-" + name);
-            input.setAttribute("class", "modal_input")
-            input.setAttribute("autocomplete", "off")
-            input.setAttribute("name", "result-" + name);
-            input.setAttribute("value", "0")
-
-            div.appendChild(label);
-            div.appendChild(input);
-
-            document.getElementById("team-list").appendChild(div);
-        });
-
-        modal.style.display = "block";
-    }
-
-    sendBtn.onclick = function () {
-        var data = {};
-        teamNames.forEach(function (name) {
-            var input = document.getElementById("result-" + name);
-            data[name] = input.value;
-        });
-
-        fetch('/result', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-                // Дополнительные действия при успешной отправке данных
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                // Обработка ошибки при отправке данных
-            });
-
-        modal.style.display = "none"; // Закрыть модальное окно после отправки данных
-    }
-
-    span.onclick = function () {
-        modal.style.display = "none";
-    }
-
-    window.onclick = function (event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-</script>
 
 </body>
 </html>

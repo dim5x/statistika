@@ -1,0 +1,14 @@
+create table teams_questions
+(
+    id         INTEGER
+        primary key autoincrement,
+    team_name  TEXT,
+    summa      REAL,
+    "07-03-24" REAL,
+    "14-03-24" REAL,
+    "21-03-24" REAL,
+    "28-03-24" REAL,
+    "04-04-24" REAL,
+    "11-04-24" REAL,
+    "18-04-24" REAL
+);
