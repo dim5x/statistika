@@ -1,5 +1,6 @@
 import json
 import sqlite3
+import subprocess
 
 from flask import Flask, render_template, request, jsonify, g
 from flask_cors import CORS  # pip install flask_cors
@@ -380,7 +381,7 @@ def update_from_github() -> jsonify:
     """
     print(request.json)
     # subprocess.run(['git', 'pull'])
-    # subprocess.run(['python', 'statistika.py'])
+    subprocess.run(['/bin/bash', 'sudo', 'touch', '!lol.kek'])
     return jsonify(success=True)
 
 @app.route('/update_table_players', methods=['POST'])
