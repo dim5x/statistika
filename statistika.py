@@ -103,7 +103,7 @@ def get_columns() -> list[dict]:
             "editor": "input",  # if column == "team_name" else "number"
             # Пример условной логики для определения значения editor
             'sorter': 'number',
-            'hozAlign': 'center',
+            'hozAlign': 'center' if column == 'summa_2' else 'left'
         })
 
     # Вывод преобразованных объектов
