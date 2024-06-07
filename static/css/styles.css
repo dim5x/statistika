@@ -225,3 +225,10 @@ label, input, button {
         width: 100%;
     }
 }
+
+/*#table_main{*/
+/*    display: flex;*/
+/*    flex-shrink: 1;*/
+/*    flex-direction: column;*/
+/*     background: #c9773e;*/
+/*}*/
