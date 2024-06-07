@@ -4,27 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Статистика</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="static/img/favicon-32x32.png">
-    <link rel="stylesheet" href="static/css/styles.css">
-    <link rel="stylesheet" href="static/css/sezon.css">
-    <!--    <link rel="stylesheet" href="static/css/minify_styles.css">-->
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon-32x32.png">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/sezon.css">
 
-    <link href="https://unpkg.com/tabulator-tables@5.0.7/dist/css/tabulator.min.css" rel="stylesheet">
-    <script src="https://unpkg.com/tabulator-tables@5.0.7/dist/js/tabulator.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!--    <link rel="stylesheet" href="static/css/minify_styles.css">-->
+    <!--From Internet-->
+    <!--    <link href="https://unpkg.com/tabulator-tables@5.0.7/dist/css/tabulator.min.css" rel="stylesheet">-->
+    <!--    <script src="https://unpkg.com/tabulator-tables@5.0.7/dist/js/tabulator.min.js"></script>-->
+    <!--    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
+
+    <!--    From local-->
+    <link rel="stylesheet" href="/static/css/out/tabulator.min.css">
+    <script src="/static/js/out/tabulator.min.js"></script>
+    <script src="/static/js/out/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 <div class="sidebar">
     <ul>
-        <li><a href="maintable" id="main_table_link">Таблица</a></li>
-        <li><a href="add_game">Проверить пакет</a></li>
-        <li><a href="add_player">Добавить игрока</a></li>
-        <li><a href="add_team">Добавить команду</a></li>
+        <li><a href="/maintable" id="main_table_link">Таблица</a></li>
+        <li><a href="/add_game">Проверить пакет</a></li>
+        <li><a href="/add_player">Добавить игрока</a></li>
+        <li><a href="/add_team">Добавить команду</a></li>
     </ul>
 </div>
 <div class="content">
     {% block content %} {% endblock %}
 </div>
-
 </body>
 </html>

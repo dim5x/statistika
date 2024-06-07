@@ -1,13 +1,3 @@
-// Установить активную вкладку при загрузке страницы
-// Установить активную вкладку при загрузке страницы
-// document.addEventListener("DOMContentLoaded", function (event) {
-//     // Выберите вкладку, которую хотите сделать активной
-//     var defaultTab = document.getElementById('main_table_link'); // Например, установим Tab 2 активной
-//
-//     // Пометить выбранную вкладку как активную
-//     defaultTab.click();
-// });
-
 fetch('/get_columns')
     .then(response => {
         if (response.ok) {
@@ -30,17 +20,16 @@ fetch('/get_columns')
                 sorter: column.sorter,
                 // dir: column.dir
             };
-
         });
 
         console.log('columns', columns);
 
         // Создание таблицы
-        let table = new Tabulator("#table_main", {
+        // let table = new Tabulator("#table_main", {
+        new Tabulator("#table_main", {
 
             initialSort: [
                 {column: "summa_2", dir: "desc"}, //sort by this first
-                // {column: "height", dir: "desc"}, //then sort by this second
             ],
             ajaxURL: "/get_data_for_main_table",
             ajaxConfig: "GET",
@@ -49,11 +38,6 @@ fetch('/get_columns')
 
             ajaxResponse: function (url, params, response) {
                 return response;
-
-                },
-
+            },
         });
-
     })
-
-
