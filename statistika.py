@@ -3,7 +3,7 @@ import os
 import sqlite3
 import subprocess
 
-from flask import Flask, render_template, request, jsonify, g
+from flask import Flask, render_template, request, jsonify, g, redirect
 from flask_cors import CORS  # pip install flask_cors
 
 # from typing import List
@@ -39,13 +39,30 @@ def close_db_connection(exception: Exception) -> None:
 
 
 @app.route('/')
-def index() -> str:
+@app.route('/maintable')
+def maintable() -> str:
     """
     Функция, которая служит обработчиком маршрута для корневого URL. Отображает шаблон 'index.html'.
     """
     print('kek')
 
-    return render_template('index.html')
+    # return render_template('index.html')
+    return render_template('maintable.html')
+
+
+@app.route('/add_game', methods=['GET'])
+def add_game() -> str:
+    return render_template('add_game.html')
+
+
+@app.route('/add_player', methods=['GET', 'POST'])
+def add_player():
+    return render_template('add_player.html')
+
+
+@app.route('/add_team', methods=['GET'])
+def add_team():
+    return render_template('add_team.html')
 
 
 @app.route('/get_columns', methods=['GET'])
@@ -365,7 +382,7 @@ def update_from_github() -> jsonify:
     os.system(cmd)
     print(cmd)
     # return jsonify(success=True, data=request.json)
-    return str(request.date)
+    return str(request.json)
 
 
 @app.route('/update_table_players', methods=['POST'])

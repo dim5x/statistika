@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<section id="table">
+
+    <div id="table_main"></div>
+    <br>
+    <button id="set_result_button" type="submit" style="float: right">Внести результаты игры</button>
+    <span>lol kek cheburek</span>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" style="float: right;">&times;</span>
+            <h2>Введите результаты игры:</h2>
+            <ul id="team-list">
+                <!-- Team names will be added dynamically here -->
+            </ul>
+            <button id="send-result" style="float: right;">Отправить</button>
+        </div>
+    </div>
+
+</section>
+<script src="/static/js/table_main.js"></script>
+<script src="/static/js/modal.js"></script>
+{% endblock %}

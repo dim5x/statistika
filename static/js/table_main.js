@@ -1,12 +1,12 @@
 // Установить активную вкладку при загрузке страницы
 // Установить активную вкладку при загрузке страницы
-document.addEventListener("DOMContentLoaded", function (event) {
-    // Выберите вкладку, которую хотите сделать активной
-    var defaultTab = document.getElementById('main_table_link'); // Например, установим Tab 2 активной
-
-    // Пометить выбранную вкладку как активную
-    defaultTab.click();
-});
+// document.addEventListener("DOMContentLoaded", function (event) {
+//     // Выберите вкладку, которую хотите сделать активной
+//     var defaultTab = document.getElementById('main_table_link'); // Например, установим Tab 2 активной
+//
+//     // Пометить выбранную вкладку как активную
+//     defaultTab.click();
+// });
 
 fetch('/get_columns')
     .then(response => {

@@ -49,9 +49,9 @@ html, body {
     flex-grow: 1;
 }
 
-section {
-    display: none;
-}
+/*section {*/
+/*    display: none;*/
+/*}*/
 
 section:target {
     display: block;
