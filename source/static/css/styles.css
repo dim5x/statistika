@@ -1,0 +1,234 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+}
+
+.sidebar {
+    width: 200px;
+    background-color: #333;
+    padding-top: 20px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin: 0;
+    border-bottom: 1px solid #444; /* Добавлена нижняя граница */
+}
+
+.sidebar ul li a {
+    display: block;
+    color: white;
+    padding: 15px 20px; /* Увеличены отступы */
+    text-decoration: none;
+    font-size: 16px; /* Увеличен размер шрифта */
+    transition: background-color 0.3s; /* Добавлен плавный переход */
+}
+
+.sidebar ul li a:hover {
+    background-color: #575757;
+}
+
+.sidebar ul li a:active, .sidebar ul li a:focus {
+    background-color: #007bff; /* Цвет выделенного элемента */
+    outline: none; /* Убирает стандартное выделение */
+}
+
+.content {
+    margin-left: 200px;
+    padding: 20px;
+    flex-grow: 1;
+}
+
+/*section {*/
+/*    display: none;*/
+/*}*/
+
+section:target {
+    display: block;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    /*max-width: 300px;*/
+}
+
+label, input, button {
+    margin-bottom: 10px;
+}
+
+/* Дополнительные стили для кнопки "Добавить поле" */
+.green-plus {
+    /*background-color: #28a745;*/
+    color: #28a745;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    margin-left: 10px; /* Добавлен отступ слева */
+    /*border-radius: 50%;*/
+    transition: background-color 0.3s;
+    font-size: 20px; /* Размер шрифта плюса */
+    line-height: 1; /* Убираем лишний отступ для выравнивания с текстом */
+}
+
+/* При наведении изменяем фон кнопки */
+.green-plus:hover {
+    background-color: white;
+}
+
+/* Отступ для кнопки "Добавить поле" */
+#add-input {
+    margin-top: 10px; /* Добавлен верхний отступ */
+}
+
+/*Для выравнивания полей ввода в форме "Добавить игрока":*/
+#player-form div {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#player-form label {
+    width: 100px;
+}
+
+#player-form input {
+    /*flex: -1;*/
+    width: 200px;
+}
+
+/*#player-form button {*/
+/*    !*width: 200px;*!*/
+/*    !*font-size: inherit;*!*/
+/*    max-width: 100px;*/
+/*}*/
+
+#check_button {
+    max-width: 280px;
+}
+
+#add-game {
+    /*width: 100%;*/
+    width: 800px;
+}
+
+#add-player {
+    width: 100%;
+}
+
+/* Modal styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    position: relative; /* Добавляем относительное позиционирование */
+
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 20px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#send-result {
+    float: right;
+    position: absolute;
+    bottom: 10px; /* Пример отступа от нижнего края */
+    right: 10px; /* Пример отступа от правого края */
+}
+
+/* Добавьте следующие стили в ваш CSS-файл */
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.modal_label {
+    display: inline-block;
+    width: 250px; /* Ширина лейбла, можно изменить по вашему усмотрению */
+}
+
+.modal_input {
+    width: 50px; /* Ширина поля ввода, можно изменить по вашему усмотрению */
+}
+
+#set_result_button {
+
+}
+
+#example-table {
+    width: max-content;
+}
+
+@media screen and (max-width: 600px) {
+    body {
+        font-size: 18px;
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .content {
+        margin: 0;
+        width: 100%;
+    }
+}
+
+/*#table_main{*/
+/*    display: flex;*/
+/*    flex-shrink: 1;*/
+/*    flex-direction: column;*/
+/*     background: #c9773e;*/
+/*}*/

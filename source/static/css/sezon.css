@@ -1,0 +1,31 @@
+.container {
+    display: flex;
+    height: 100vh;
+    margin-top: -20px;
+    margin-left: -20px;
+}
+
+.box1 {
+    width: 100px;
+    background: #fbebe0;
+    padding-left: 10px;
+}
+
+.box2 {
+    padding-top: 10px;
+    padding-left: 10px;
+}
+
+a {
+    color: #333;
+    text-decoration: none;
+}
+
+a:hover {
+    opacity: 10;
+    color: #978F89;
+}
+
+/*a:visited {*/
+/*  color: purple;*/
+/*}*/

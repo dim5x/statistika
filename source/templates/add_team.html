@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<section id="add-team">
+    <h1>Добавить команду</h1>
+    <form id="team-form" method="post">
+        <div>
+            <label for="team-name">Название команды:</label>
+            <input type="text" id="team-name" name="team-name" required autofocus>
+
+            <button type="submit">Добавить</button>
+        </div>
+        <br>
+        <h1>Таблица команд:</h1>
+        <div id="table_teams"></div>
+    </form>
+</section>
+<script src="/static/js/table_teams.js"></script>
+{% endblock %}

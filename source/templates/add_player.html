@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<section id="add-player">
+    <h1>Добавить игрока:</h1>
+    <form id="player-form" method="post">
+        <div>
+            <label for="player-fio">ФИО игрока:</label>
+            <input type="text" id="player-fio" name="player-fio" required autocomplete="off" autofocus>
+        </div>
+        <div>
+            <label for="player-name">ID игрока:</label>
+            <input type="text" id="player-name" name="player-name" required autocomplete="off">
+
+        </div>
+        <button type="submit">Добавить</button>
+    </form>
+    <br>
+    <h1>Таблица игроков:</h1>
+    <div id="example-table"></div>
+    <button id="update-button">Update Data</button>
+
+</section>
+<script src="/static/js/table_players.js"></script>
+{% endblock %}
