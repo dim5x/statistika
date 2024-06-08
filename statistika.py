@@ -1,15 +1,21 @@
+import hashlib
 import json
 import os
 import sqlite3
 import subprocess
 
-from flask import Flask, render_template, request, jsonify, g, redirect
+from flask import Flask, render_template, request, jsonify, g, redirect, session
 from flask_cors import CORS  # pip install flask_cors
 
 # from typing import List
 
 app = Flask(__name__)
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'  # для работы session
+
 CORS(app)
+
+
+# g.login = ''
 
 
 def get_db_connection() -> sqlite3.Connection:
@@ -22,6 +28,7 @@ def get_db_connection() -> sqlite3.Connection:
     db_connection = getattr(g, '_database', None)
     if db_connection is None:
         db_connection = g._database = sqlite3.connect('data.db')
+
     return db_connection
 
 
@@ -39,6 +46,75 @@ def close_db_connection(exception: Exception) -> None:
 
 
 @app.route('/')
+def index():
+    # session.clear()
+    db_connection = get_db_connection()
+    cursor = db_connection.cursor()
+
+    # Выполнение SQL-запроса и получение данных
+    # cursor.execute('SELECT * FROM main."teams_scores-mark_for_deletion"')  # Выберите все столбцы из таблицы players
+    cursor.execute('SELECT * FROM teams_rating')  # Выберите все столбцы из таблицы players
+
+    data = cursor.fetchall()
+    # print(f'{cursor.description=}')
+    # Получение названий столбцов из результирующего набора
+    columns = [description[0] for description in cursor.description]
+    # print(columns)
+
+    # Преобразование данных в формат JSON
+    json_data = []
+    for row in data:
+        row_data = {}
+        for i in range(1, len(columns)):
+            row_data[columns[i]] = row[i]
+        json_data.append(row_data)
+    print(json_data)
+    data = sorted(json_data, key=lambda x: x['summa_2'], reverse=True)
+
+    return render_template('index.html', data=data)
+
+
+@app.route('/login', methods=['POST', 'GET'])
+def admin_login():
+    """
+    Обрабатывает логин в систему. Считывает с формы логин/пароль (index.html).
+
+    Проверяет в базе наличие хэша пароля. В случае успеха делает редирект на основную страницу.
+    Помечает успешный залогин в кукисе session[login] = login.
+    В противном случае - пишет Fail и отображает страницу ввода пароля снова.
+    """
+    db_connection = get_db_connection()
+    cursor = db_connection.cursor()
+
+    print('logon')
+
+    if request.method == 'POST':
+        login = request.form.get('login')
+        password = request.form.get('password')
+
+        password_hash = hashlib.sha3_384(bytes(password, encoding='UTF-8')).hexdigest()
+
+        query = '''
+                    select
+                        count(1) _count
+                    from
+                        login
+                    where
+                        user =:login
+                        and
+                        hash =:hash
+                '''
+        data = {'login': login, 'hash': password_hash}
+
+        if cursor.execute(query, data).fetchall()[0][0]:
+            session[login] = login
+            return redirect('/maintable')
+        else:
+            return render_template('login.html', message='Fail.')
+
+    return render_template('login.html')
+
+
 @app.route('/maintable')
 def maintable() -> str:
     """
@@ -73,7 +149,7 @@ def get_columns() -> list[dict]:
     # Подключение к базе данных SQLite
     db_connection = get_db_connection()
     cursor = db_connection.cursor()
-
+    admin_flag = session.get('admin') == 'admin'
     # Выполнение SQL-запроса и получение данных
     # cursor.execute('SELECT * FROM main."teams_scores-mark_for_deletion"')  # Выберите все столбцы из таблицы players
     cursor.execute('SELECT name FROM pragma_table_info("teams_rating")')
@@ -100,7 +176,8 @@ def get_columns() -> list[dict]:
         transformed_columns.append({
             "title": field_title,
             "field": column,
-            "editor": "input",  # if column == "team_name" else "number"
+            "editor": "input" if admin_flag else False,
+            # if column == "team_name" else "number"
             # Пример условной логики для определения значения editor
             'sorter': 'number',
             'hozAlign': 'center' if column == 'summa_2' else 'left'
@@ -138,7 +215,7 @@ def get_data_for_main_table() -> list[dict[str, any]]:
         for i in range(1, len(columns)):
             row_data[columns[i]] = row[i]
         json_data.append(row_data)
-    # print(data)
+    print(json_data)
     return json_data
     # return jsonify(data)
 
@@ -321,6 +398,7 @@ def set_result():
 
 @app.route('/test', methods=['POST', 'GET'])
 def test() -> list:
+    print(session['admin'])
     if request.method == 'POST':
         print(request.form)
         print('OK')

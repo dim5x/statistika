@@ -1,0 +1,81 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #978F89;
+}
+
+.nav {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    background-color: #333;
+    color: white;
+    padding: 15px;
+}
+
+.nav a {
+    color: white;
+    text-decoration: none;
+    padding: 14px 20px;
+}
+
+.nav a:hover {
+    background-color: #575757;
+    border-radius: 5px;
+}
+
+.container {
+    display: flex;
+    height: calc(100vh - 60px); /* Высота контейнера равна высоте окна браузера минус высота навигации */
+}
+
+.column {
+    flex: 1; /* Каждая колонка занимает равную долю ширины */
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/*.column1 {*/
+/*    background-color: red;*/
+/*}*/
+
+/*.column2 {*/
+/*    background-color: green;*/
+/*}*/
+
+/*.column3 {*/
+/*    background-color: blue;*/
+/*}*/
+
+.login-form {
+    background: rgba(255, 255, 255, 0.8); /* Полупрозрачный фон для формы */
+    padding: 20px;
+    border-radius: 10px;
+    width: 200px;
+}
+
+.login-form input {
+    display: block;
+    width: auto;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.login-form button {
+    width: auto;
+    padding: 10px;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    float: right;
+    margin-right: 10px;
+}
+
+
+.login-form button:hover {
+    background: #555;
+}

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/css/login.css">
+</head>
+<body>
+<div class="container">
+    <div class="column column1">
+        <div class="login-form">
+            <h2>Login</h2>
+            <form method="post">
+                <input name='login' type="text" placeholder="Username" required autofocus>
+                <input name='password' type="password" placeholder="Password" required>
+                <span style="color:#e74c3c">{{ message }}</span>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
