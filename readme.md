@@ -8,22 +8,35 @@
 4. js / table_main.js - обработчик главной таблицы.
 5. js / table_players.js - обработчик таблицы игроков.
 
-Формат БД:
+#### Структура БД
 
-Таблица tournaments:
-```
-id : date       : name                               : tournament_id : player_id
-1  : 30.05.2024 : Синхрон Нехрустальной совы. День 2 : 10702         : 82887;27831;7148;...
-```
-Таблица players:
-```
-id : fio         : player_id                      
-1  : Иван Иванов : 10702
-```
-Таблица team_scores:
-```
-id : team_name  : Сумма  : 07-03-24 : 14-03-24                      
-1  : Паравозики : 107.02 : 12       : 14.5
+```mermaid
+erDiagram
+    games }|--|{ game_result : places
+    games {
+        int id
+        date date
+    }
+    teams }|--|{ game_result : contains
+    teams {
+        int id
+        string name
+    }
+    game_result {
+        int game_id
+        string game_type
+        int team_id
+        int team_score
+    }
+    players{
+        int id
+        string fio
+        int player_id
+    }
+    scores{
+        int position
+        int score
+    }
 ```
 
 
