@@ -47,7 +47,7 @@ def close_db_connection(exception: Exception) -> None:
 
 @app.route('/')
 def index():
-    # session.clear()
+    session.clear()
     db_connection = get_db_connection()
     cursor = db_connection.cursor()
 
