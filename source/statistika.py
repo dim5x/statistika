@@ -27,7 +27,7 @@ def get_db_connection() -> sqlite3.Connection:
 
     db_connection = getattr(g, '_database', None)
     if db_connection is None:
-        db_connection = g._database = sqlite3.connect('data.db')
+        db_connection = g._database = sqlite3.connect('../data.db')
 
     return db_connection
 

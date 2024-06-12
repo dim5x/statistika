@@ -1,6 +1,6 @@
 import pytest
 import json
-from statistika import app, get_db_connection
+from source.statistika import app, get_db_connection
 
 @pytest.fixture
 def client():
