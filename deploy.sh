@@ -11,7 +11,7 @@ After=syslog.target network.target
 
 [Service]
 WorkingDirectory=$current_dir
-ExecStart=$current_dir/venv/bin/python3 statistika.py
+ExecStart=$current_dir/venv/bin/python3 source/statistika.py
 
 Restart=always
 RestartSec=120
