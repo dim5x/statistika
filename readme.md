@@ -42,4 +42,4 @@ erDiagram
 
 Команда развёртывания / установки:
 
-    git clone https://github.com/dim5x/statistika.git && cd statistika\cicd && chmod +x deploy.sh && sudo ./deploy.sh
+    git clone https://github.com/dim5x/statistika.git && cd statistika && chmod +x deploy.sh && sudo ./deploy.sh
