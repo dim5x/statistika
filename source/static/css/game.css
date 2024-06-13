@@ -1,0 +1,33 @@
+form {
+    display: flex;
+    flex-direction: column;
+    /*max-width: 300px;*/
+}
+
+label, input, button {
+    margin-bottom: 10px;
+}
+
+/* Дополнительные стили для кнопки "Добавить поле" */
+.green-plus {
+    /*background-color: #28a745;*/
+    color: #28a745;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    margin-left: 10px; /* Добавлен отступ слева */
+    /*border-radius: 50%;*/
+    transition: background-color 0.3s;
+    font-size: 20px; /* Размер шрифта плюса */
+    line-height: 1; /* Убираем лишний отступ для выравнивания с текстом */
+}
+
+/* При наведении изменяем фон кнопки */
+.green-plus:hover {
+    background-color: white;
+}
+
+/* Отступ для кнопки "Добавить поле" */
+#add-input {
+    margin-top: 10px; /* Добавлен верхний отступ */
+}

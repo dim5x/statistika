@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-<section id="add-game">
+    <section id="add-game">
         <h1>Проверить пакет:</h1>
         <form id="game-form" method="post">
             <div id="input-container" class="input-group"> <!-- Добавлен класс "input-group" -->
@@ -13,5 +13,6 @@
         <br>
         <div id="serverResponse"></div>
     </section>
-<script src="/js/check_packets.js"></script>
+    <script src="/static/js/check_packets.js"></script>
+    <link rel="stylesheet" href="../static/css/game.css">
 {% endblock %}

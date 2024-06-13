@@ -1,0 +1,13 @@
+a {
+    color: #333;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #978F89;
+    opacity: 10;
+}
+
+/*a:visited {*/
+/*  color: purple;*/
+/*}*/

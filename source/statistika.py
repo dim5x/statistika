@@ -3,8 +3,14 @@ import json
 import os
 import sqlite3
 import subprocess
+import sys
+
+import db_management
 
 from flask import Flask, render_template, request, jsonify, g, redirect, session
+
+from cicd import db_initialization
+
 from flask_cors import CORS  # pip install flask_cors
 
 # from typing import List
@@ -13,9 +19,6 @@ app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'  # для работы session
 
 CORS(app)
-
-
-# g.login = ''
 
 
 def get_db_connection() -> sqlite3.Connection:
@@ -27,8 +30,14 @@ def get_db_connection() -> sqlite3.Connection:
 
     db_connection = getattr(g, '_database', None)
     if db_connection is None:
-        db_connection = g._database = sqlite3.connect('../data.db')
-
+        # для тестирования
+        # os.remove('../data.db')
+        if not os.path.exists('./data.db'):
+            db_connection = g._database = sqlite3.connect('./data.db')
+            db_initialization.create_tables(db_connection)
+            db_initialization.load_test_data(db_connection)
+        else:
+            db_connection = g._database = sqlite3.connect('./data.db')
     return db_connection
 
 
@@ -48,30 +57,31 @@ def close_db_connection(exception: Exception) -> None:
 @app.route('/')
 def index():
     session.clear()
+    # db_connection = get_db_connection()
+    # cursor = db_connection.cursor()
     db_connection = get_db_connection()
-    cursor = db_connection.cursor()
-
+    data = db_management.get_maintable(db_connection)
     # Выполнение SQL-запроса и получение данных
     # cursor.execute('SELECT * FROM main."teams_scores-mark_for_deletion"')  # Выберите все столбцы из таблицы players
-    cursor.execute('SELECT * FROM teams_rating')  # Выберите все столбцы из таблицы players
+    # cursor.execute('SELECT * FROM teams_rating')  # Выберите все столбцы из таблицы players
 
-    data = cursor.fetchall()
+    # data = cursor.fetchall()
     # print(f'{cursor.description=}')
     # Получение названий столбцов из результирующего набора
-    columns = [description[0] for description in cursor.description]
-    # print(columns)
-
+    columns = [description[0] for description in data.description]
+    print(columns)
+    thead = ['Команда', 'Сумма', 'Сумма - 2'] + columns[3:]
     # Преобразование данных в формат JSON
     json_data = []
     for row in data:
         row_data = {}
-        for i in range(1, len(columns)):
+        for i in range(0, len(columns)):
             row_data[columns[i]] = row[i]
         json_data.append(row_data)
     print(json_data)
-    data = sorted(json_data, key=lambda x: x['summa_2'], reverse=True)
+    data = sorted(json_data, key=lambda x: x['_sum_minus_2'], reverse=True)
 
-    return render_template('index.html', data=data)
+    return render_template('index.html', thead=thead, data=data)
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -148,36 +158,27 @@ def get_columns() -> list[dict]:
     """
     # Подключение к базе данных SQLite
     db_connection = get_db_connection()
-    cursor = db_connection.cursor()
-    admin_flag = session.get('admin') == 'admin'
-    # Выполнение SQL-запроса и получение данных
-    # cursor.execute('SELECT * FROM main."teams_scores-mark_for_deletion"')  # Выберите все столбцы из таблицы players
-    cursor.execute('SELECT name FROM pragma_table_info("teams_rating")')
-    # data = cursor.fetchall()
-    # print(f'FROM get_columns: {data=}')
-    # Получение названий столбцов из результирующего набора
-    columns = [description[0] for description in cursor.fetchall()]
-    # print(f'FROM get_columns: {columns=}')
-    # columns = getattr(g, '_columns', None)
-    print(f'FROM get_columns: g.columns={columns=}')
+    data = db_management.get_maintable(db_connection)
+
+    columns = [description[0] for description in data.description]
+
     transformed_columns = []
 
     # Цикл для преобразования каждого элемента массива строк в объект
-    for column in columns[1:]:
+    for column in columns[:]:
         if column == "team_name":
             field_title = "Команда"
-        elif column == "summa":
+        elif column == "_sum_":
             field_title = "Cумма"
-        elif column == "summa_2":
-            field_title = "Cумма_2"
+        elif column == "_sum_minus_2":
+            field_title = "Cумма (-2)"
         else:
             field_title = column
 
         transformed_columns.append({
             "title": field_title,
             "field": column,
-            "editor": "input" if admin_flag else False,
-            # if column == "team_name" else "number"
+            "editor": "input",  # if column == "team_name" else "number"
             # Пример условной логики для определения значения editor
             'sorter': 'number',
             'hozAlign': 'center' if column == 'summa_2' else 'left'
@@ -185,6 +186,7 @@ def get_columns() -> list[dict]:
 
     # Вывод преобразованных объектов
     # print(f'{transformed_columns=}')
+    print(transformed_columns)
     return jsonify(transformed_columns)
 
 
@@ -193,29 +195,21 @@ def get_data_for_main_table() -> list[dict[str, any]]:
     """
     Функция для извлечения данных для основной таблицы из базы данных SQLite и возврата их в формате JSON.
     """
-
-    # Подключение к базе данных SQLite
     db_connection = get_db_connection()
-    cursor = db_connection.cursor()
+    data = db_management.get_maintable(db_connection)
 
-    # Выполнение SQL-запроса и получение данных
-    # cursor.execute('SELECT * FROM main."teams_scores-mark_for_deletion"')  # Выберите все столбцы из таблицы players
-    cursor.execute('SELECT * FROM teams_rating')  # Выберите все столбцы из таблицы players
-
-    data = cursor.fetchall()
-    # print(f'{cursor.description=}')
     # Получение названий столбцов из результирующего набора
-    columns = [description[0] for description in cursor.description]
-    # print(columns)
+    columns = [description[0] for description in data.description]
+    print(columns)
 
     # Преобразование данных в формат JSON
     json_data = []
     for row in data:
         row_data = {}
-        for i in range(1, len(columns)):
+        for i in range(0, len(columns)):
             row_data[columns[i]] = row[i]
         json_data.append(row_data)
-    print(json_data)
+    # print(data)
     return json_data
     # return jsonify(data)
 
@@ -254,7 +248,12 @@ def get_data_for_table_teams() -> list[dict[str, str]]:
     cursor = db_connection.cursor()
 
     cursor.execute(
-        'SELECT team_name FROM main."teams_scores-mark_for_deletion"')  # Выберите все столбцы из таблицы players
+        '''
+        select 
+            name 
+        from
+            teams
+        ''')  # Выберите все столбцы из таблицы players
     data = []
     for i in cursor.fetchall():
         data.append({'Name': i[0]})  # data.append(i[0])
@@ -398,7 +397,6 @@ def set_result():
 
 @app.route('/test', methods=['POST', 'GET'])
 def test() -> list:
-    print(session['admin'])
     if request.method == 'POST':
         print(request.form)
         print('OK')

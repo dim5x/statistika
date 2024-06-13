@@ -1,78 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Статистика</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
-    <!--    <link rel="stylesheet" href="/static/css/styles.css">-->
-    <!--    <link rel="stylesheet" href="/static/css/sezon.css">-->
-
-    <!--    <link rel="stylesheet" href="static/css/minify_styles.css">-->
-    <!--From Internet-->
-    <!--    <link href="https://unpkg.com/tabulator-tables@5.0.7/dist/css/tabulator.min.css" rel="stylesheet">-->
-    <!--    <script src="https://unpkg.com/tabulator-tables@5.0.7/dist/js/tabulator.min.js"></script>-->
-    <!--    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
-
-    <!--    From local-->
-    <link rel="stylesheet" href="/css/out/tabulator.min.css">
-    <script src="/js/out/tabulator.min.js"></script>
-    <script src="/js/out/jquery-3.6.0.min.js"></script>
-    <script src="/js/table_main.js"></script>
-<link rel="stylesheet" href="/css/ind.css">
-    <style>
-        /*body {*/
-        /*    margin: 0;*/
-        /*    font-family: Arial, sans-serif;*/
-        /*}*/
-
-        .nav {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            background-color: #333;
-            color: white;
-            /*padding: 15px;*/
-        }
-
-        .nav a {
-            color: white;
-            text-decoration: none;
-            padding: 14px 20px;
-        }
-
-        .nav a:hover {
-            background-color: #575757;
-            border-radius: 5px;
-        }
-    </style>
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon-32x32.png">
+    <link rel="stylesheet" href="/static/css/index.css">
 </head>
+
 <body>
-<div class="nav">
-    <a href="login">Login</a>
-</div>
 
-<div id="table_main" style="width: max-content"></div>
-<h2>Или вообще так?</h2>
+<div class="nav"><a href="login">Login</a></div>
+
 <div>
-    <table style="border: #212529 1px solid; border-collapse: collapse">
+    <table>
+        <thead>
+        {% for el in thead %}
+            <th>{{ el }}</th>
+        {% endfor %}
+        </thead>
         {% for row in data %}
-        <tr>
-
-            <td style="border: #212529 1px solid; padding: 5px">{{ row['team_name'] }}</td>
-            <td style="border: #212529 1px solid;">{{ row['summa'] }}</td>
-            <td style="border: #212529 1px solid;">{{ row['summa_2'] }}</td>
-            <td style="border: #212529 1px solid;">{{ row['07-03-24'] }}</td>
-            <td style="border: #212529 1px solid">{{ row['14-03-24'] }}</td>
-            <td style="border: #212529 1px solid">{{ row['21-03-24'] }}</td>
-            <td style="border: #212529 1px solid">{{ row['28-03-24'] }}</td>
-            <td style="border: #212529 1px solid"> {{ row['04-04-24'] }}</td>
-            <td style="border: #212529 1px solid">{{ row['11-04-24'] }}</td>
-            <td style="border: #212529 1px solid">{{ row['18-04-24'] }}</td>
-        </tr>
+            <tr>
+                <td>{{ row['team_name'] }}</td>
+                <td>{{ row['_sum_'] }}</td>
+                <td>{{ row['_sum_minus_2'] }}</td>
+                <td>{{ row['2024-03-07'] }}</td>
+                <td>{{ row['2024-03-14'] }}</td>
+                <td>{{ row['2024-03-21'] }}</td>
+                <td>{{ row['2024-03-28'] }}</td>
+                <td>{{ row['2024-04-04'] }}</td>
+                <td>{{ row['2024-04-11'] }}</td>
+                <td>{{ row['2024-04-18'] }}</td>
+            </tr>
         {% endfor %}
     </table>
 </div>
-
 </body>
 </html>

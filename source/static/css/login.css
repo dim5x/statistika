@@ -4,25 +4,25 @@ body {
     background: #978F89;
 }
 
-.nav {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    background-color: #333;
-    color: white;
-    padding: 15px;
-}
+/*.nav {*/
+/*    display: flex;*/
+/*    justify-content: flex-end;*/
+/*    align-items: center;*/
+/*    background-color: #333;*/
+/*    color: white;*/
+/*    padding: 15px;*/
+/*}*/
 
-.nav a {
-    color: white;
-    text-decoration: none;
-    padding: 14px 20px;
-}
+/*.nav a {*/
+/*    color: white;*/
+/*    text-decoration: none;*/
+/*    padding: 14px 20px;*/
+/*}*/
 
-.nav a:hover {
-    background-color: #575757;
-    border-radius: 5px;
-}
+/*.nav a:hover {*/
+/*    background-color: #575757;*/
+/*    border-radius: 5px;*/
+/*}*/
 
 .container {
     display: flex;

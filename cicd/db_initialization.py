@@ -1,14 +1,15 @@
 import sqlite3
 
 
-def create_tables(db_connection):
+def create_tables(db_connection: sqlite3.Connection) -> None:
+    print('Function create_tables() called...')
     query = '''
-				create table if not exists players
-				(
-					id integer primary key autoincrement,
-					fio text not null,
-					player_id text not null
-				);
+                create table if not exists players
+                (
+                id integer primary key autoincrement,
+                fio text not null,
+                player_id text not null
+                );
 
 				create table if not exists teams
 				(

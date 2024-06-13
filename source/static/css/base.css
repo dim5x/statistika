@@ -1,0 +1,58 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    overflow-x: auto;
+}
+
+.sidebar {
+    width: 200px;
+    background-color: #333;
+    padding-top: 20px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin: 0;
+    border-bottom: 1px solid #444; /* Добавлена нижняя граница */
+}
+
+.sidebar ul li a {
+    display: block;
+    color: white;
+    padding: 15px 20px; /* Увеличены отступы */
+    text-decoration: none;
+    font-size: 16px; /* Увеличен размер шрифта */
+    transition: background-color 0.3s; /* Добавлен плавный переход */
+}
+
+.sidebar ul li a:hover {
+    background-color: #575757;
+}
+
+.sidebar ul li a:active, .sidebar ul li a:focus {
+    background-color: #007bff; /* Цвет выделенного элемента */
+    outline: none; /* Убирает стандартное выделение */
+}
+
+section:target {
+    display: block;
+}
+
+.content {
+    margin-left: 200px;
+    padding: 20px;
+    flex-grow: 1;
+    /*overflow: hidden;*/
+    overflow-x: hidden;
+    overflow-y: hidden;
+}

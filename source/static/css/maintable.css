@@ -6,26 +6,15 @@
 }
 
 .box1 {
-    width: 100px;
     background: #fbebe0;
     padding-left: 10px;
+    padding-right: 10px;
+    width: 100px;
+
 }
 
 .box2 {
+    /*background: #0a58ca;*/
     padding-top: 10px;
-    padding-left: 10px;
+    /*padding-left: 10px;*/
 }
-
-a {
-    color: #333;
-    text-decoration: none;
-}
-
-a:hover {
-    opacity: 10;
-    color: #978F89;
-}
-
-/*a:visited {*/
-/*  color: purple;*/
-/*}*/

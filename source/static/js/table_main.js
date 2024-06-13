@@ -29,7 +29,7 @@ fetch('/get_columns')
         new Tabulator("#table_main", {
 
             initialSort: [
-                {column: "summa_2", dir: "desc"}, //sort by this first
+                {column: "_sum_minus_2", dir: "desc"}, //sort by this first
             ],
             ajaxURL: "/get_data_for_main_table",
             ajaxConfig: "GET",
