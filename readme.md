@@ -135,6 +135,8 @@ erDiagram
 </details>
 
 
-#### Команда развёртывания / установки:
+###### Команда развёртывания / установки:
 
-    git clone https://github.com/dim5x/statistika.git && cd statistika && chmod +x deploy.sh && sudo ./deploy.sh
+```bash
+git clone https://github.com/dim5x/statistika.git && cd statistika && chmod +x deploy.sh && sudo ./deploy.sh
+```
