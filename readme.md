@@ -39,8 +39,10 @@ erDiagram
     }
 ```
 
-Структура проекта:![Stat.png](source%2Fstatic%2Fimg%2FStat.png)
-https://www.sharecanvas.io/p/stat
+Структура проекта (А здесь в формате холста Obsidian: https://www.sharecanvas.io/p/stat
+):
+
+![Stat.png](source%2Fstatic%2Fimg%2FStat.png)
 
 Команда развёртывания / установки:
 
