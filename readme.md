@@ -8,7 +8,7 @@
 4. js / table_main.js - обработчик главной таблицы.
 5. js / table_players.js - обработчик таблицы игроков.
 
-#### Структура БД
+#### Структура БД:
 
 ```mermaid
 erDiagram
@@ -39,12 +39,12 @@ erDiagram
     }
 ```
 
-Структура проекта в png: 
+#### Структура проекта (в png): 
 
 (а здесь в формате холста Obsidian: https://www.sharecanvas.io/p/stat )
 
 ![Stat.png](source%2Fstatic%2Fimg%2FStat.png)
 
-Команда развёртывания / установки:
+#### Команда развёртывания / установки:
 
     git clone https://github.com/dim5x/statistika.git && cd statistika && chmod +x deploy.sh && sudo ./deploy.sh
