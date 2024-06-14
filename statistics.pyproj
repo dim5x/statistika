@@ -55,9 +55,6 @@
     <Content Include="source\static\css\styles.css" />
     <Content Include="source\static\img\favicon-32x32.png" />
     <Content Include="source\static\js\check_packets.js" />
-    <Content Include="source\static\js\minify_packet.js" />
-    <Content Include="source\static\js\minify_table_main.js" />
-    <Content Include="source\static\js\minify_table_players.js" />
     <Content Include="source\static\js\modal.js" />
     <Content Include="source\static\js\out\jquery-3.6.0.min.js" />
     <Content Include="source\static\js\out\tabulator.min.js" />
@@ -68,7 +65,7 @@
     <Content Include="source\templates\add_player.html" />
     <Content Include="source\templates\add_team.html" />
     <Content Include="source\templates\base.html" />
-    <Content Include="source\templates\maintable.html" />
+    <Content Include="source\templates\main_table.html" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="..\..\_python_enviroments\statistics\env\">

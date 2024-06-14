@@ -310,6 +310,32 @@ def update_table_players():
         return jsonify(success=False, error=str(e))
 
 
+@app.route('/update_table_teams', methods=['POST'])
+def update_table_teams():
+    """
+    Функция для обновления таблицы команд данными, полученными через POST-запрос.
+    Эта функция добавляет новую команду в таблицу teams.
+    В случае успешного выполнения возвращает JSON-ответ с сообщением об успехе, в противном случае возвращает сообщение
+    об ошибке.
+    """
+    db_connection = get_db_connection()
+    cursor = db_connection.cursor()
+    try:
+        print(request.json)
+        d = request.json
+        print(type(d))
+        t_name = d['team_name']
+        query = 'insert into teams(name) values (?)'
+        cursor.execute(query, (t_name,))
+        db_connection.commit()
+
+        response = {"success": True}
+        return jsonify(response)
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify(success=False, error=str(e))
+
 @app.errorhandler(404)
 def page_not_found(error):
     """Отображает страницу ошибки в случае перехода на несуществующую страницу."""
