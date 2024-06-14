@@ -1,12 +1,9 @@
 import hashlib
-import json
 import os
 import re
 import sqlite3
-import subprocess
-import sys
 
-from flask import Flask, flash, g, jsonify, redirect, render_template, request, session
+from flask import Flask, g, jsonify, redirect, render_template, request, session
 from flask_cors import CORS
 import requests
 
@@ -68,12 +65,7 @@ def index():
     thead = ['Команда', 'Сумма', 'Сумма - 2'] + columns[3:]
 
     # Преобразование данных в формат JSON
-    json_data = []
-    for row in data:
-        row_data = {}
-        for i in range(0, len(columns)):
-            row_data[columns[i]] = row[i]
-        json_data.append(row_data)
+    json_data = to_json(data, columns)
 
     # Сортировка по сумме
     data = sorted(json_data, key=lambda x: x['_sum_minus_2'], reverse=True)
@@ -115,7 +107,7 @@ def admin_login():
 
         if cursor.execute(query, data).fetchall()[0][0]:
             session[login] = login
-            return redirect('/maintable')
+            return redirect('/main_table')
         else:
             return render_template('login.html', message='Fail.')
 
@@ -163,7 +155,8 @@ def add_team():
 @app.route('/get_columns', methods=['GET'])
 def get_columns() -> list[dict]:
     """
-    Функция для извлечения названий столбцов из таблицы базы данных и преобразования их в определенный формат для отображения.
+    Функция для извлечения названий столбцов из таблицы базы данных и преобразования их в определенный формат
+    для отображения.
     """
     # Подключение к базе данных SQLite
     db_connection = get_db_connection()
@@ -196,13 +189,12 @@ def get_columns() -> list[dict]:
 
         })
 
-    # Вывод преобразованных объектов
-    # print(f'{transformed_columns=}')
-    # print(transformed_columns)
-    return jsonify(transformed_columns)
+    # return jsonify(transformed_columns)
+    return transformed_columns
 
 
 def to_json(data, columns):
+    """Вспомогательная функция для преобразования данных в формат JSON."""
     print('Function to_json() was called...')
     json_data = []
     for row in data:
@@ -210,7 +202,7 @@ def to_json(data, columns):
         for i in range(0, len(columns)):
             row_data[columns[i]] = row[i]
         json_data.append(row_data)
-    # print(f'{json_data=}')
+
     return json_data
 
 
@@ -238,7 +230,7 @@ def get_data():
 
 
 @app.route('/check_packet', methods=['POST'])
-def check_packet() -> jsonify:
+def check_packet():
     print(request.json)
     packets = [i for i in request.json if i]
     answer = []
@@ -254,136 +246,23 @@ def check_packet() -> jsonify:
     return jsonify(success=True, data=''.join(answer))
 
 
-# @app.route('/set_result', methods=['POST'])
-# def set_result():
-#     db_connection = get_db_connection()
-#     cursor = db_connection.cursor()
-#     # print('result')
-#     # print(request.json)
-#
-#     # Получение названий всех колонок
-#     cursor.execute("PRAGMA table_info(teams_scores)")
-#     columns = [info[1] for info in cursor.fetchall()]
-#
-#     # Определение колонок для суммирования (те, что имеют формат даты)
-#     date_columns = [col for col in columns if "-" in col]
-#
-#     # Создание части запроса для суммирования значений этих колонок
-#     sum_expression = " + ".join([f'COALESCE("{col}", 0)' for col in date_columns])
-#
-#     # Создание части запроса для суммирования значений этих колонок без двух наименьших значений
-#     sum_minus_two_least_expression = f"""
-#         SELECT ({sum_expression}) -
-#         COALESCE((SELECT SUM(val) FROM (
-#             SELECT val FROM (
-#                 SELECT {', '.join([f'COALESCE("{col}", 0)' for col in date_columns])} AS val
-#                 FROM main."teams_scores-mark_for_deletion" t2
-#                 WHERE t2.id = teams_scores.id AND t2.team_name NOT LIKE '%_q%'
-#             )
-#             ORDER BY val LIMIT 2
-#         )), 0)
-#         FROM main."teams_scores-mark_for_deletion" t3
-#         WHERE t3.id = teams_scores.id AND t3.team_name NOT LIKE '%_q%'
-#     """
-#     # print(f'{sum_minus_two_least_expression=}')
-#     # Генерация полного SQL-запроса для обновления
-#     sql_update_query = f"""
-#     UPDATE main."teams_scores-mark_for_deletion"
-#     SET summa = (
-#         SELECT {sum_expression}
-#         FROM main."teams_scores-mark_for_deletion" t2
-#         WHERE t2.id = "teams_scores-mark_for_deletion".id AND t2.team_name NOT LIKE '%_q%'
-#     ),
-#     summa_2 = (
-#         {sum_minus_two_least_expression}
-#     )
-#     WHERE team_name NOT LIKE '%_q%';
-#     """
-#
-#     # Выполнение SQL-запроса
-#     cursor.execute(sql_update_query)
-#     db_connection.commit()
-#
-#     # Закрытие соединения
-#     # conn.close()
-#
-#     # query = "SELECT player_id, fio FROM main.players"
-#     # players_data = cursor.execute(query).fetchall()
-#     # # players_set = set([player[0] for player in players_data])
-#     # players_dict = {k: v for k, v in players_data}
-#     # # print(f'{players_dict=}')
-#     #
-#     # answer = []
-#     # for i in request.json:
-#     #     # print(f'{i=}')
-#     #     if i:
-#     #         query = 'SELECT player_id from tournaments WHERE tournaments.tournament_id = ?'
-#     #         tournaments_player_id = cursor.execute(query, (int(i),)).fetchall()
-#     #         print(f'{tournaments_player_id=}')
-#     #         if not tournaments_player_id:
-#     #             answer.append(f'Турнир {i} в базе не найден.')
-#     #             continue
-#     #         tournaments_player_id_set = set(tournaments_player_id[0][0].split(';'))
-#     #         print(f'{tournaments_player_id_set=}')
-#     #         intersection = tournaments_player_id_set.intersection(players_dict.keys())
-#     #
-#     #         # https: // rating.maii.li / b / player / 172423 /
-#     #         if intersection:
-#     #             answer.append(f'В турнире {i} играл(и): {[players_dict[i] for i in intersection]}')
-#     #         else:
-#     #             answer.append(f'В турнире {i} никто не играл.')
-#     # print(f'{answer=}')
-#     # print('\n'.join(answer))
-#     # return jsonify(success=True, data='\n'.join(answer))
-#     return jsonify(success=True, data=request.json)
-
 @app.route('/test', methods=['POST', 'GET'])
-def test() -> list:
+def test():
     if request.method == 'POST':
         print(request.form)
         print('OK')
-    json_data = [
-        {'id': 1, 'name': "Tiger Nixon", 'position': "System Architect", 'office': "Edinburgh", 'extension': "5421",
-         'startDate': "2011/04/25", 'salary': "Tiger Nixon"}
-    ]
-    l = {'data': [[1, 'test', 78],
-                  [2, 'test2', 145],
-                  [3, 'test3', 23],
-                  [4, 'test4', 45]],
-         'columns': ['id', 'name', 'position']
-         }
-    m = {
-        "data": [
-            {
-                "id": 1,
-                "name": "John Doe",
-                "position": "Developer"
-            },
-            {
-                "id": 2,
-                "name": "Jane Smith",
-                "position": "Designer"
-            },
-
-        ],
-
-    }
-
-    tabledata = [
-        {'id': '1', 'name': "Oli Bob", 'age': "12", 'col': "red", 'dob': ""},
-        {'id': '2', 'name': "Mary May", 'age': "1", 'col': "blue", 'dob': "14/05/1982"},
-        {'id': '3', 'name': "Christine Lobowski", 'age': "42", 'col': "green", 'dob': "22/05/1982"},
-        {'id': '4', 'name': "Brendon Philips", 'age': "125", 'col': "orange", 'dob': "01/08/1980"},
-        {'id': '5', 'name': "Margret Marmajuke", 'age': "16", 'col': "yellow", 'dob': "31/01/1999"},
-    ]
-    # tabledata = [
-    #     [1, "Oli Bob", "12", "red", ""],
-    #     [1, "Oli Bob", "12", "red", ""],
-    #     [1, "Oli Bob", "12", "red", ""],
-    #
+    # json_data = [
+    #     {'id': 1, 'name': "Tiger Nixon", 'position': "System Architect", 'office': "Edinburgh", 'extension': "5421",
+    #      'startDate': "2011/04/25", 'salary': "Tiger Nixon"}
     # ]
+    # lll = {'data': [[1, 'test', 78],
+    #               [2, 'test2', 145],
+    #               [3, 'test3', 23],
+    #               [4, 'test4', 45]],
+    #      'columns': ['id', 'name', 'position']
+    #      }
 
-    return tabledata
+    # return lll
 
 
 @app.route('/update_from_github', methods=['POST', 'GET'])
@@ -404,11 +283,12 @@ def update_from_github() -> jsonify:
 
 
 @app.route('/update_table_players', methods=['POST'])
-def update_table_players() -> jsonify:
+def update_table_players():
     """
     Функция для обновления таблицы игроков данными, полученными через POST-запрос.
     Эта функция добавляет нового игрока в таблицу players, используя его полное имя (fio) и идентификатор игрока.
-    В случае успешного выполнения возвращает JSON-ответ с сообщением об успехе, в противном случае возвращает сообщение об ошибке.
+    В случае успешного выполнения возвращает JSON-ответ с сообщением об успехе, в противном случае возвращает сообщение
+    об ошибке.
     """
     db_connection = get_db_connection()
     cursor = db_connection.cursor()
@@ -439,4 +319,3 @@ def page_not_found(error):
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5555)
-    # app.run(debug=True)

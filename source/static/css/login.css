@@ -4,25 +4,6 @@ body {
     background: #978F89;
 }
 
-/*.nav {*/
-/*    display: flex;*/
-/*    justify-content: flex-end;*/
-/*    align-items: center;*/
-/*    background-color: #333;*/
-/*    color: white;*/
-/*    padding: 15px;*/
-/*}*/
-
-/*.nav a {*/
-/*    color: white;*/
-/*    text-decoration: none;*/
-/*    padding: 14px 20px;*/
-/*}*/
-
-/*.nav a:hover {*/
-/*    background-color: #575757;*/
-/*    border-radius: 5px;*/
-/*}*/
 
 .container {
     display: flex;
@@ -36,18 +17,6 @@ body {
     align-items: center;
     justify-content: center;
 }
-
-/*.column1 {*/
-/*    background-color: red;*/
-/*}*/
-
-/*.column2 {*/
-/*    background-color: green;*/
-/*}*/
-
-/*.column3 {*/
-/*    background-color: blue;*/
-/*}*/
 
 .login-form {
     background: rgba(255, 255, 255, 0.8); /* Полупрозрачный фон для формы */
@@ -79,4 +48,3 @@ body {
 .login-form button:hover {
     background: #555;
 }
-
