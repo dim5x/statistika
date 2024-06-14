@@ -39,6 +39,7 @@ erDiagram
     }
 ```
 
+Структура проекта: https://www.sharecanvas.io/p/stat
 
 Команда развёртывания / установки:
 
