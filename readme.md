@@ -43,8 +43,7 @@ erDiagram
 
 (а здесь в формате холста Obsidian: https://www.sharecanvas.io/p/stat )
 
-![Stat.png](source%2Fstatic%2Fimg%2FStat.png)
-
+![Stat.png](doc%2FStat.png)
 #### Команда развёртывания / установки:
 
     git clone https://github.com/dim5x/statistika.git && cd statistika && chmod +x deploy.sh && sudo ./deploy.sh
