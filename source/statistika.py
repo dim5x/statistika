@@ -1,17 +1,17 @@
 import hashlib
 import json
 import os
+import re
 import sqlite3
 import subprocess
 import sys
 
-import db_management
-
-from flask import Flask, render_template, request, jsonify, g, redirect, session
+from flask import Flask, flash, g, jsonify, redirect, render_template, request, session
+from flask_cors import CORS
+import requests
 
 from cicd import db_initialization
-
-from flask_cors import CORS  # pip install flask_cors
+import db_management
 
 # from typing import List
 
@@ -32,12 +32,12 @@ def get_db_connection() -> sqlite3.Connection:
     if db_connection is None:
         # для тестирования
         # os.remove('../data.db')
-        if not os.path.exists('./data.db'):
-            db_connection = g._database = sqlite3.connect('./data.db')
+        if not os.path.exists('../data.db'):
+            db_connection = g._database = sqlite3.connect('../data.db')
             db_initialization.create_tables(db_connection)
             db_initialization.load_test_data(db_connection)
         else:
-            db_connection = g._database = sqlite3.connect('./data.db')
+            db_connection = g._database = sqlite3.connect('../data.db')
     return db_connection
 
 
@@ -57,20 +57,16 @@ def close_db_connection(exception: Exception) -> None:
 @app.route('/')
 def index():
     session.clear()
-    # db_connection = get_db_connection()
-    # cursor = db_connection.cursor()
+
     db_connection = get_db_connection()
     data = db_management.get_maintable(db_connection)
-    # Выполнение SQL-запроса и получение данных
-    # cursor.execute('SELECT * FROM main."teams_scores-mark_for_deletion"')  # Выберите все столбцы из таблицы players
-    # cursor.execute('SELECT * FROM teams_rating')  # Выберите все столбцы из таблицы players
 
-    # data = cursor.fetchall()
-    # print(f'{cursor.description=}')
     # Получение названий столбцов из результирующего набора
     columns = [description[0] for description in data.description]
-    print(columns)
+
+    # Добавление названий столбцов в начало
     thead = ['Команда', 'Сумма', 'Сумма - 2'] + columns[3:]
+
     # Преобразование данных в формат JSON
     json_data = []
     for row in data:
@@ -78,7 +74,8 @@ def index():
         for i in range(0, len(columns)):
             row_data[columns[i]] = row[i]
         json_data.append(row_data)
-    print(json_data)
+
+    # Сортировка по сумме
     data = sorted(json_data, key=lambda x: x['_sum_minus_2'], reverse=True)
 
     return render_template('index.html', thead=thead, data=data)
@@ -125,15 +122,15 @@ def admin_login():
     return render_template('login.html')
 
 
-@app.route('/maintable')
-def maintable() -> str:
+@app.route('/main_table')
+def main_table() -> str:
     """
-    Функция, которая служит обработчиком маршрута для корневого URL. Отображает шаблон 'index.html'.
+    Функция, которая служит обработчиком маршрута для таблицы. Отображает шаблон 'main_table.html'.
     """
-    print('kek')
-
-    # return render_template('index.html')
-    return render_template('maintable.html')
+    print('Function main_table() was called...')
+    if request.method == 'POST':
+        print(request.data)
+    return render_template('main_table.html')
 
 
 @app.route('/add_game', methods=['GET'])
@@ -144,6 +141,18 @@ def add_game() -> str:
 @app.route('/add_player', methods=['GET', 'POST'])
 def add_player():
     return render_template('add_player.html')
+
+
+@app.route('/add_score', methods=['GET', 'POST'])
+def add_score():
+    db_connection = get_db_connection()
+    data = [i[0] for i in db_management.get_teams(db_connection)]
+
+    message = ''
+    if request.method == 'POST':
+        print(request.form)
+        message = 'Данные внесли.'
+    return render_template('add_score.html', data=data, message=message)
 
 
 @app.route('/add_team', methods=['GET'])
@@ -181,219 +190,152 @@ def get_columns() -> list[dict]:
             "editor": "input",  # if column == "team_name" else "number"
             # Пример условной логики для определения значения editor
             'sorter': 'number',
-            'hozAlign': 'center' if column == 'summa_2' else 'left'
+            'hozAlign': 'center' if column == 'summa_2' else 'left',
+            # 'contextMenu': 'cellContextMenu'
+            'validator': 'numeric',
+
         })
 
     # Вывод преобразованных объектов
     # print(f'{transformed_columns=}')
-    print(transformed_columns)
+    # print(transformed_columns)
     return jsonify(transformed_columns)
 
 
-@app.route('/get_data_for_main_table', methods=['GET'])
-def get_data_for_main_table() -> list[dict[str, any]]:
-    """
-    Функция для извлечения данных для основной таблицы из базы данных SQLite и возврата их в формате JSON.
-    """
-    db_connection = get_db_connection()
-    data = db_management.get_maintable(db_connection)
-
-    # Получение названий столбцов из результирующего набора
-    columns = [description[0] for description in data.description]
-    print(columns)
-
-    # Преобразование данных в формат JSON
+def to_json(data, columns):
+    print('Function to_json() was called...')
     json_data = []
     for row in data:
         row_data = {}
         for i in range(0, len(columns)):
             row_data[columns[i]] = row[i]
         json_data.append(row_data)
-    # print(data)
+    # print(f'{json_data=}')
     return json_data
-    # return jsonify(data)
 
 
-@app.route('/get_data_for_table_players', methods=['GET'])
-def get_data_for_table_players() -> list[dict[str, any]]:
-    """
-    Получить данные для таблицы игроков и вернуть их в виде JSON объекта.
-    """
+@app.route('/get_data', methods=['GET'])
+def get_data():
+    if request.referrer is None:
+        return 'Що таке?'
+
     db_connection = get_db_connection()
-    cursor = db_connection.cursor()
 
-    cursor.execute('SELECT * FROM main.players')  # Выберите все столбцы из таблицы players
-    data = cursor.fetchall()
-
-    columns = [description[0] for description in cursor.description]
-    # print(columns)
-
-    json_data = []
-    for row in data:
-        row_data = {}
-        for i in range(len(columns)):
-            row_data[columns[i]] = row[i]
-        json_data.append(row_data)
-    # print(json_data)
-    return (json_data)
-
-
-@app.route('/get_data_for_table_teams', methods=['GET'])
-def get_data_for_table_teams() -> list[dict[str, str]]:
-    """
-    Функция для получения данных для таблицы команд. Она подключается к базе данных, извлекает названия команд,
-    структурирует данные в список словарей и возвращает данные.
-    """
-    db_connection = get_db_connection()
-    cursor = db_connection.cursor()
-
-    cursor.execute(
-        '''
-        select 
-            name 
-        from
-            teams
-        ''')  # Выберите все столбцы из таблицы players
-    data = []
-    for i in cursor.fetchall():
-        data.append({'Name': i[0]})  # data.append(i[0])
-
-    # print()
-    print(type(data))
-    print(f'FROM main.teams_scores: {data=}')
-    # return jsonify(success=True, data=data)
-    return data
+    who = request.referrer.split('/')[-1]
+    match who:
+        case 'main_table':
+            data = db_management.get_maintable(db_connection)
+            columns = [description[0] for description in data.description]
+            return to_json(data, columns)
+        case 'add_player':
+            data = db_management.get_players(db_connection)
+            columns = ['id', 'fio', 'player_id']
+            return to_json(data, columns)
+        case 'add_team':
+            data = db_management.get_teams(db_connection)
+            columns = ['Name']
+            return to_json(data, columns)
 
 
 @app.route('/check_packet', methods=['POST'])
 def check_packet() -> jsonify:
-    """
-    Функция для проверки пакетов и извлечения информации об игроках для каждого идентификатора турнира.
-    Эта функция взаимодействует с базой данных, чтобы извлечь данные об игроках и сопоставить их с идентификаторами турниров.
-    Возвращает JSON-ответ с успешным статусом и данными, содержащими информацию об игроках для каждого турнира.
-    """
-    db_connection = get_db_connection()
-    cursor = db_connection.cursor()
-    print('lol')
-    # print(request.json)
-
-    query = "SELECT player_id, fio FROM main.players"
-    players_data = cursor.execute(query).fetchall()
-    # players_set = set([player[0] for player in players_data])
-    players_dict = {k: v for k, v in players_data}
-    # print(f'{players_dict=}')
-
+    print(request.json)
+    packets = [i for i in request.json if i]
     answer = []
-    for tour_id in request.json:
-        # print(f'{tour_id=}')
-        if tour_id:
-            query = 'SELECT player_id from tournaments WHERE tournaments.tournament_id = ?'
-            tournaments_player_id = cursor.execute(query, (int(tour_id),)).fetchall()
-            # print(f'{tournaments_player_id=}')
-            if not tournaments_player_id:
-                answer.append(f'Турнир {tour_id} в базе не найден.<br>')
-                continue
-            tournaments_player_id_set = set(tournaments_player_id[0][0].split(';'))
-            # print(f'{tournaments_player_id_set=}')
-            intersection = tournaments_player_id_set.intersection(players_dict.keys())
+    for packet_id in packets:
+        r = requests.get(f'https://rating.maii.li/b/tournament/{packet_id}/')
+        # print(r.text)
+        pattern = r'/\/b\/player\/(\d+)/gm'
+        matches = re.findall(pattern, r.text)
+        print(matches)
+        print(len(matches))
+        answer.append(matches)
 
-            # https: // rating.maii.li / b / player / 172423 /
-            if intersection:
-                # print(f'{intersection=}')
-                # for j in intersection:
-                #     url = f'<a href="https://rating.maii.li/b/player/{j}>{players_dict[j]}</a>'
-                #     answer.append(f'В турнире {tour_id} играл(и): {url}')
-                answer.append(f'В турнире {tour_id} играл(и): {[players_dict[i] for i in intersection]}<br>')
-            else:
-                answer.append(f'В турнире {tour_id} никто не играл.')
-            # print(f'{answer=}')
-            # print('\n'.join(answer))
     return jsonify(success=True, data=''.join(answer))
 
 
-@app.route('/set_result', methods=['POST'])
-def set_result():
-    db_connection = get_db_connection()
-    cursor = db_connection.cursor()
-    # print('result')
-    # print(request.json)
-
-    # Получение названий всех колонок
-    cursor.execute("PRAGMA table_info(teams_scores)")
-    columns = [info[1] for info in cursor.fetchall()]
-
-    # Определение колонок для суммирования (те, что имеют формат даты)
-    date_columns = [col for col in columns if "-" in col]
-
-    # Создание части запроса для суммирования значений этих колонок
-    sum_expression = " + ".join([f'COALESCE("{col}", 0)' for col in date_columns])
-
-    # Создание части запроса для суммирования значений этих колонок без двух наименьших значений
-    sum_minus_two_least_expression = f"""
-        SELECT ({sum_expression}) -
-        COALESCE((SELECT SUM(val) FROM (
-            SELECT val FROM (
-                SELECT {', '.join([f'COALESCE("{col}", 0)' for col in date_columns])} AS val
-                FROM main."teams_scores-mark_for_deletion" t2
-                WHERE t2.id = teams_scores.id AND t2.team_name NOT LIKE '%_q%'
-            )
-            ORDER BY val LIMIT 2
-        )), 0)
-        FROM main."teams_scores-mark_for_deletion" t3
-        WHERE t3.id = teams_scores.id AND t3.team_name NOT LIKE '%_q%'
-    """
-    # print(f'{sum_minus_two_least_expression=}')
-    # Генерация полного SQL-запроса для обновления
-    sql_update_query = f"""
-    UPDATE main."teams_scores-mark_for_deletion"
-    SET summa = (
-        SELECT {sum_expression}
-        FROM main."teams_scores-mark_for_deletion" t2
-        WHERE t2.id = "teams_scores-mark_for_deletion".id AND t2.team_name NOT LIKE '%_q%'
-    ),
-    summa_2 = (
-        {sum_minus_two_least_expression}
-    )
-    WHERE team_name NOT LIKE '%_q%';
-    """
-
-    # Выполнение SQL-запроса
-    cursor.execute(sql_update_query)
-    db_connection.commit()
-
-    # Закрытие соединения
-    # conn.close()
-
-    # query = "SELECT player_id, fio FROM main.players"
-    # players_data = cursor.execute(query).fetchall()
-    # # players_set = set([player[0] for player in players_data])
-    # players_dict = {k: v for k, v in players_data}
-    # # print(f'{players_dict=}')
-    #
-    # answer = []
-    # for i in request.json:
-    #     # print(f'{i=}')
-    #     if i:
-    #         query = 'SELECT player_id from tournaments WHERE tournaments.tournament_id = ?'
-    #         tournaments_player_id = cursor.execute(query, (int(i),)).fetchall()
-    #         print(f'{tournaments_player_id=}')
-    #         if not tournaments_player_id:
-    #             answer.append(f'Турнир {i} в базе не найден.')
-    #             continue
-    #         tournaments_player_id_set = set(tournaments_player_id[0][0].split(';'))
-    #         print(f'{tournaments_player_id_set=}')
-    #         intersection = tournaments_player_id_set.intersection(players_dict.keys())
-    #
-    #         # https: // rating.maii.li / b / player / 172423 /
-    #         if intersection:
-    #             answer.append(f'В турнире {i} играл(и): {[players_dict[i] for i in intersection]}')
-    #         else:
-    #             answer.append(f'В турнире {i} никто не играл.')
-    # print(f'{answer=}')
-    # print('\n'.join(answer))
-    # return jsonify(success=True, data='\n'.join(answer))
-    return jsonify(success=True, data=request.json)
-
+# @app.route('/set_result', methods=['POST'])
+# def set_result():
+#     db_connection = get_db_connection()
+#     cursor = db_connection.cursor()
+#     # print('result')
+#     # print(request.json)
+#
+#     # Получение названий всех колонок
+#     cursor.execute("PRAGMA table_info(teams_scores)")
+#     columns = [info[1] for info in cursor.fetchall()]
+#
+#     # Определение колонок для суммирования (те, что имеют формат даты)
+#     date_columns = [col for col in columns if "-" in col]
+#
+#     # Создание части запроса для суммирования значений этих колонок
+#     sum_expression = " + ".join([f'COALESCE("{col}", 0)' for col in date_columns])
+#
+#     # Создание части запроса для суммирования значений этих колонок без двух наименьших значений
+#     sum_minus_two_least_expression = f"""
+#         SELECT ({sum_expression}) -
+#         COALESCE((SELECT SUM(val) FROM (
+#             SELECT val FROM (
+#                 SELECT {', '.join([f'COALESCE("{col}", 0)' for col in date_columns])} AS val
+#                 FROM main."teams_scores-mark_for_deletion" t2
+#                 WHERE t2.id = teams_scores.id AND t2.team_name NOT LIKE '%_q%'
+#             )
+#             ORDER BY val LIMIT 2
+#         )), 0)
+#         FROM main."teams_scores-mark_for_deletion" t3
+#         WHERE t3.id = teams_scores.id AND t3.team_name NOT LIKE '%_q%'
+#     """
+#     # print(f'{sum_minus_two_least_expression=}')
+#     # Генерация полного SQL-запроса для обновления
+#     sql_update_query = f"""
+#     UPDATE main."teams_scores-mark_for_deletion"
+#     SET summa = (
+#         SELECT {sum_expression}
+#         FROM main."teams_scores-mark_for_deletion" t2
+#         WHERE t2.id = "teams_scores-mark_for_deletion".id AND t2.team_name NOT LIKE '%_q%'
+#     ),
+#     summa_2 = (
+#         {sum_minus_two_least_expression}
+#     )
+#     WHERE team_name NOT LIKE '%_q%';
+#     """
+#
+#     # Выполнение SQL-запроса
+#     cursor.execute(sql_update_query)
+#     db_connection.commit()
+#
+#     # Закрытие соединения
+#     # conn.close()
+#
+#     # query = "SELECT player_id, fio FROM main.players"
+#     # players_data = cursor.execute(query).fetchall()
+#     # # players_set = set([player[0] for player in players_data])
+#     # players_dict = {k: v for k, v in players_data}
+#     # # print(f'{players_dict=}')
+#     #
+#     # answer = []
+#     # for i in request.json:
+#     #     # print(f'{i=}')
+#     #     if i:
+#     #         query = 'SELECT player_id from tournaments WHERE tournaments.tournament_id = ?'
+#     #         tournaments_player_id = cursor.execute(query, (int(i),)).fetchall()
+#     #         print(f'{tournaments_player_id=}')
+#     #         if not tournaments_player_id:
+#     #             answer.append(f'Турнир {i} в базе не найден.')
+#     #             continue
+#     #         tournaments_player_id_set = set(tournaments_player_id[0][0].split(';'))
+#     #         print(f'{tournaments_player_id_set=}')
+#     #         intersection = tournaments_player_id_set.intersection(players_dict.keys())
+#     #
+#     #         # https: // rating.maii.li / b / player / 172423 /
+#     #         if intersection:
+#     #             answer.append(f'В турнире {i} играл(и): {[players_dict[i] for i in intersection]}')
+#     #         else:
+#     #             answer.append(f'В турнире {i} никто не играл.')
+#     # print(f'{answer=}')
+#     # print('\n'.join(answer))
+#     # return jsonify(success=True, data='\n'.join(answer))
+#     return jsonify(success=True, data=request.json)
 
 @app.route('/test', methods=['POST', 'GET'])
 def test() -> list:
@@ -487,6 +429,12 @@ def update_table_players() -> jsonify:
     except Exception as e:
         print(f"Error: {e}")
         return jsonify(success=False, error=str(e))
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    """Отображает страницу ошибки в случае перехода на несуществующую страницу."""
+    return render_template('404.html', error=error), 404
 
 
 if __name__ == '__main__':

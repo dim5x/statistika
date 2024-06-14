@@ -9,7 +9,7 @@ var table = new Tabulator("#table_teams", {
         // {title: "player_ID", field: "player_id", editor: "number"},
     ],
     // autoColumns: true,
-    ajaxURL: "/get_data_for_table_teams",
+    ajaxURL: "/get_data",
     ajaxConfig: "GET",
     ajaxResponse: function (url, params, response) {
         return response;

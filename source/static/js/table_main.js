@@ -1,3 +1,11 @@
+// var cellContextMenu = [
+//     {
+//         label: "Reset Value",
+//         action: function (e, cell) {
+//             cell.setValue("");
+//         }
+//     },
+// ]
 fetch('/get_columns')
     .then(response => {
         if (response.ok) {
@@ -19,6 +27,8 @@ fetch('/get_columns')
                 hozAlign: column.hozAlign,
                 sorter: column.sorter,
                 // dir: column.dir
+                // contextMenu:cellContextMenu
+                validator: column.validator
             };
         });
 
@@ -31,7 +41,7 @@ fetch('/get_columns')
             initialSort: [
                 {column: "_sum_minus_2", dir: "desc"}, //sort by this first
             ],
-            ajaxURL: "/get_data_for_main_table",
+            ajaxURL: "/get_data",
             ajaxConfig: "GET",
             columns: columns,
             layout: "fitData",
@@ -41,3 +51,24 @@ fetch('/get_columns')
             },
         });
     })
+
+function sendDataToUpdate(data) {
+    fetch('/test', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Network response was not ok.');
+        })
+        .then(data => {
+            console.log(data); // Обработка успешного ответа от сервера
+            // Дополнительная обработка данных при необходимости
+        })
+        .catch(error => {
+            console.error('Fetch error:', error); // Обработка ошибок
+        });
+}

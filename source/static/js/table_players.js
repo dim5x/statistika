@@ -9,7 +9,7 @@ var table = new Tabulator("#example-table", {
         {title: "player_ID", field: "player_id", editor: "number"},
     ],
     // autoColumns: true,
-    ajaxURL: "/get_data_for_table_players",
+    ajaxURL: "/get_data",
     ajaxConfig: "GET",
     ajaxResponse: function (url, params, response) {
         return response;
@@ -18,7 +18,7 @@ var table = new Tabulator("#example-table", {
 
 // Функция для обновления данных в таблице через AJAX и перерисовки
 function updateTableFromAjax() {
-    fetch('/get_data_for_table_players')
+    fetch('/get_data')
         .then(response => {
             if (response.ok) {
                 return response.json();
@@ -51,9 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Отправка данных на сервер с использованием метода POST
         fetch('/update_table_players', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(postData)
         })
             .then(response => {
@@ -64,7 +62,6 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(data => {
                 console.log(data); // Обработка успешного ответа от сервера
-
                 updateTableFromAjax();
             })
             .catch(error => {

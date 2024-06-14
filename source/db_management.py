@@ -1,5 +1,6 @@
 import sqlite3
 
+
 def get_maintable(db_connection):
     query = '''
 			 with 
@@ -92,4 +93,20 @@ def get_maintable(db_connection):
     cursor.execute(query)
     query = cursor.fetchone()[0]
     data = cursor.execute(query)
+    return data
+
+
+def get_players(db_connection):
+    cursor = db_connection.cursor()
+    query = 'SELECT * FROM main.players'
+    cursor.execute(query)  # Выберите все столбцы из таблицы players
+    data = cursor.fetchall()
+    return data
+
+
+def get_teams(db_connection):
+    cursor = db_connection.cursor()
+    query = 'SELECT name FROM main.teams'
+    cursor.execute(query)  # Выберите все столбцы из таблицы teams
+    data = cursor.fetchall()
     return data
