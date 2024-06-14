@@ -10,8 +10,6 @@ import requests
 from cicd import db_initialization
 import db_management
 
-# from typing import List
-
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'  # для работы session
 
