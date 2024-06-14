@@ -16,6 +16,7 @@ var table = new Tabulator("#table_teams", {
     },
 });
 
+// Функция для обновления данных в таблице через AJAX и перерисовки
 function updateTableFromAjax() {
     fetch('/get_data')
         .then(response => {

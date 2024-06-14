@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <h2>Введите результаты игры:</h2>
+    <form id="score-form" action="/add_score" method="post">
+        {% for name in data %}
+            <div>
+                <label for="player-{{ name }}">{{ name }}:</label>
+                <input type="text" id="player-{{ name }}" name="player-{{ name }}" autofocus autocomplete="off">
+            </div>
+        {% endfor %}
+        <button type="submit">Добавить</button>
+    </form>
+    <br>
+    {{ message }}
+
+
+    <link rel="stylesheet" href="../static/css/score.css">
+{% endblock %}
