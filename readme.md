@@ -39,8 +39,9 @@ erDiagram
     }
 ```
 
-Структура проекта (а здесь в формате холста Obsidian: https://www.sharecanvas.io/p/stat
-):
+Структура проекта в png: 
+
+(а здесь в формате холста Obsidian: https://www.sharecanvas.io/p/stat )
 
 ![Stat.png](source%2Fstatic%2Fimg%2FStat.png)
 
