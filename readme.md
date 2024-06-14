@@ -39,7 +39,8 @@ erDiagram
     }
 ```
 
-Структура проекта: https://www.sharecanvas.io/p/stat
+Структура проекта:![Stat.png](source%2Fstatic%2Fimg%2FStat.png)
+https://www.sharecanvas.io/p/stat
 
 Команда развёртывания / установки:
 
