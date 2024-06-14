@@ -15,60 +15,54 @@ var table = new Tabulator("#table_teams", {
         return response;
     },
 });
-// todo Функция для обновления данных в таблице через AJAX и перерисовки
-// // Функция для обновления данных в таблице через AJAX и перерисовки
-// function updateTableFromAjax() {
-//     fetch('/get_data_for_table_players')
-//         .then(response => {
-//             if (response.ok) {
-//                 return response.json();
-//             }
-//             throw new Error('Network response was not ok.');
-//         })
-//         .then(data => {
-//             console.log('Обработка успешного ответа ', data); // Обработка успешного ответа от сервера
-//             table.setData(data); // Установка новых данных из AJAX-ответа
-//             table.redraw(true); // Обновление таблицы
-//
-//         })
-//         .catch(error => {
-//             console.error('Fetch error:', error); // Обработка ошибок
-//         });
-// }
-//
-// document.addEventListener('DOMContentLoaded', function () {
-//     document.getElementById('player-form').addEventListener('submit', function (event) {
-//         event.preventDefault(); // Предотвращаем отправку формы по умолчанию
-//
-//         let playerFIO = document.getElementById('player-fio').value;
-//         let playerName = document.getElementById('player-name').value;
-//         console.log(playerFIO, playerName);
-//         let postData = {
-//             playerFIO: playerFIO,
-//             playerName: playerName
-//         };
-//
-//         // Отправка данных на сервер с использованием метода POST
-//         fetch('/update_table_players', {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json'
-//             },
-//             body: JSON.stringify(postData)
-//         })
-//             .then(response => {
-//                 if (response.ok) {
-//                     return response.json();
-//                 }
-//                 throw new Error('Network response was not ok.');
-//             })
-//             .then(data => {
-//                 console.log(data); // Обработка успешного ответа от сервера
-//
-//                 updateTableFromAjax();
-//             })
-//             .catch(error => {
-//                 console.error('Fetch error:', error); // Обработка ошибок
-//             });
-//     });
-// });
+
+function updateTableFromAjax() {
+    fetch('/get_data')
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Network response was not ok.');
+        })
+        .then(data => {
+            console.log('Обработка успешного ответа ', data); // Обработка успешного ответа от сервера
+            table.setData(data); // Установка новых данных из AJAX-ответа
+            table.redraw(true); // Обновление таблицы
+
+        })
+        .catch(error => {
+            console.error('Fetch error:', error); // Обработка ошибок
+        });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('team-form').addEventListener('submit', function (event) {
+        event.preventDefault(); // Предотвращаем отправку формы по умолчанию
+
+        let team_name = document.getElementById('team-name').value;
+        console.log(team_name);
+        let postData = {
+            team_name: team_name
+        };
+
+        // Отправка данных на сервер с использованием метода POST
+        fetch('/update_table_teams', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(postData)
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Network response was not ok.');
+            })
+            .then(data => {
+                console.log(data); // Обработка успешного ответа от сервера
+                updateTableFromAjax();
+            })
+            .catch(error => {
+                console.error('Fetch error:', error); // Обработка ошибок
+            });
+    });
+});

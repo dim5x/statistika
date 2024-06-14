@@ -1,4 +1,9 @@
-#### Содержимое:
+
+<details>
+<summary>
+Структура проекта
+</summary>
+
     ┌───
     │   .gitignore                          - для указания файлов и каталогов, которые должны быть проигнорированы при коммите.
     │   deploy.sh                           - скрипт для развёртывания на виртуальной машине.                                  
@@ -77,8 +82,13 @@
                 teams_questions.txt
                 teams_rating.txt
 
-#### Структура БД:
+</details>
 
+<details>
+<summary>
+Структура БД
+</summary>
+    
 ```mermaid
 erDiagram
     games }|--|{ game_result : places
@@ -106,13 +116,27 @@ erDiagram
         int position
         int score
     }
+    users{
+        string login
+        string password
+    }
 ```
+</details>
 
-#### Структура проекта (в png): 
+<details>
+<summary>
+Структура проекта (в png)
+</summary>
 
 (а здесь в формате холста Obsidian: https://www.sharecanvas.io/p/stat )
 
 ![Stat.png](doc%2FStat.png)
-#### Команда развёртывания / установки:
+    
+</details>
 
-    git clone https://github.com/dim5x/statistika.git && cd statistika && chmod +x deploy.sh && sudo ./deploy.sh
+
+###### Команда развёртывания / установки:
+
+```bash
+git clone https://github.com/dim5x/statistika.git && cd statistika && chmod +x deploy.sh && sudo ./deploy.sh
+```
