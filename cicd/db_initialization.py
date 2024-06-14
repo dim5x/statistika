@@ -1,11 +1,13 @@
+import sqlite3
+
+
 def create_tables(db_connection):
-    print('Function create_tables() called...')
     query = '''
                 create table if not exists players
                 (
-                id integer primary key autoincrement,
-                fio text not null,
-                player_id text not null
+                    id integer primary key autoincrement,
+                    fio text not null,
+                    player_id text not null
                 );
 
                 create table if not exists teams
@@ -18,7 +20,7 @@ def create_tables(db_connection):
                 create table if not exists games
                 (
                     id integer primary key autoincrement,
-                    games_date date not null
+                    date date not null
                 );
 
                 create table if not exists game_result
