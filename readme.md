@@ -118,7 +118,8 @@ erDiagram
     }
     users{
         string login
-        string password
+        string salt
+        string hash
     }
 ```
 </details>
@@ -128,9 +129,9 @@ erDiagram
 Структура проекта (в png)
 </summary>
 
-(а здесь в формате холста Obsidian: https://www.sharecanvas.io/p/stat )
+(а здесь в формате холста Obsidian: https://www.sharecanvas.io/p/stat)
 
-![Stat.png](doc%2FStat.png)
+![Stat.png](doc/Stat.png)
     
 </details>
 
