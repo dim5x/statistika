@@ -1,11 +1,3 @@
-// var cellContextMenu = [
-//     {
-//         label: "Reset Value",
-//         action: function (e, cell) {
-//             cell.setValue("");
-//         }
-//     },
-// ]
 fetch('/get_columns')
     .then(response => {
         if (response.ok) {
@@ -28,16 +20,14 @@ fetch('/get_columns')
                 sorter: column.sorter,
                 // dir: column.dir
                 // contextMenu:cellContextMenu
-                validator: column.validator
+                validator: column.validator,
             };
         });
 
         console.log('columns', columns);
 
         // Создание таблицы
-        // let table = new Tabulator("#table_main", {
-        new Tabulator("#table_main", {
-
+        let table = new Tabulator("#table_main", {
             initialSort: [
                 {column: "_sum_minus_2", dir: "desc"}, //sort by this first
             ],
@@ -45,30 +35,24 @@ fetch('/get_columns')
             ajaxConfig: "GET",
             columns: columns,
             layout: "fitData",
+        });
 
-            ajaxResponse: function (url, params, response) {
-                return response;
-            },
+        // Обработка события cellEdited
+        table.on("cellEdited", function (cell) {
+            // Получение данных строки
+            var data = cell.getRow().getData();
+
+            // Отправка данных на сервер через AJAX
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/test", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    // Обработка успешного ответа, если нужно
+                    console.log("Данные успешно отправлены на сервер");
+                }
+            };
+            xhr.send(JSON.stringify(data));
         });
     })
 
-function sendDataToUpdate(data) {
-    fetch('/test', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    })
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            throw new Error('Network response was not ok.');
-        })
-        .then(data => {
-            console.log(data); // Обработка успешного ответа от сервера
-            // Дополнительная обработка данных при необходимости
-        })
-        .catch(error => {
-            console.error('Fetch error:', error); // Обработка ошибок
-        });
-}
