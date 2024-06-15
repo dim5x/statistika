@@ -107,3 +107,26 @@ def get_teams(db_connection):
     cursor.execute(query)  # Выберите все столбцы из таблицы teams
     data = cursor.fetchall()
     return data
+
+
+def update_main_table(db_connection, json, date):
+    cursor = db_connection.cursor()
+    query = 'INSERT INTO main.games(date) VALUES (?)'
+    cursor.execute(query, (date,))
+    db_connection.commit()
+
+    game_id = cursor.lastrowid
+
+    # Получить словарь команд
+    teams_query = 'SELECT id, name FROM main.teams'
+    cursor.execute(teams_query)
+    teams = {team[1]: team[0] for team in cursor.fetchall()}
+    print(teams)
+
+    # Заменить название команды на ID команды в json
+    json_with_team_ids = [(game_id, 'ЧГК', teams[row], None if json[row] == '' else json[row]) for row in json]
+
+    query = 'INSERT INTO main.game_result(game_id, game_type, team_id, team_score) VALUES (?, ?, ?, ?)'
+    cursor.executemany(query, json_with_team_ids)
+    db_connection.commit()
+    return
