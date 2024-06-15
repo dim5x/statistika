@@ -1,19 +1,62 @@
 {% extends 'base.html' %}
 {% block content %}
+    <div style="display: flex; align-items: center;">
+        <h2>Введите результаты игры для&nbsp;</h2>
+        <div id="selector">
+            <select id="game-dropdown" style="font-size: 20px;">
+                <option value="matrix">Матрицы</option>
+                <option value="chgk">ЧГК</option>
+            </select>
+        </div>
+        <h2>:</h2>
+    </div>
+    <div id="matrix">
+        <h3>Матрица:</h3>
+        <form id="score-form-matrix" class="score-form" action="/add_score" method="post">
+            {% for name in data %}
+                <div>
+                    <label for="player-{{ name }}">{{ name }}:</label>
+                    <input type="text" id="player-{{ name }}" name="player-{{ name }}" autofocus autocomplete="off">
+                </div>
+            {% endfor %}
+            <button type="submit">Добавить</button>
+        </form>
+    </div>
 
-    <h2>Введите результаты игры:</h2>
-    <form id="score-form" action="/add_score" method="post">
-        {% for name in data %}
-            <div>
-                <label for="player-{{ name }}">{{ name }}:</label>
-                <input type="text" id="player-{{ name }}" name="player-{{ name }}" autofocus autocomplete="off">
-            </div>
-        {% endfor %}
-        <button type="submit">Добавить</button>
-    </form>
-    <br>
+    <div id="chgk">
+        <h3>ЧГК:</h3>
+        <form id="score-form-chgk" class="score-form" action="/add_score" method="post">
+            {% for name in data %}
+                <div>
+                    <label for="player-{{ name }}">{{ name }}:</label>
+                    <input type="text" id="player-{{ name }}" name="player-{{ name }}" autofocus autocomplete="off">
+                </div>
+            {% endfor %}
+            <button type="submit">Добавить</button>
+        </form>
+    </div>
+
+
+
+
+    <script>
+        const gameDropdown = document.getElementById("game-dropdown");
+        const matrixDiv = document.getElementById("matrix");
+        const chgkDiv = document.getElementById("chgk");
+
+        gameDropdown.addEventListener("change", function () {
+            const selectedGame = gameDropdown.value;
+            if (selectedGame === "matrix") {
+                matrixDiv.style.display = "block";
+                chgkDiv.style.display = "none";
+            } else if (selectedGame === "chgk") {
+                matrixDiv.style.display = "none";
+                chgkDiv.style.display = "block";
+            }
+        });
+    </script>
+
     {{ message }}
-
 
     <link rel="stylesheet" href="../static/css/score.css">
 {% endblock %}
