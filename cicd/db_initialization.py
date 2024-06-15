@@ -28,7 +28,7 @@ def create_tables(db_connection):
                     game_id integer,
                     game_type text,
                     team_id integer,
-                    team_score integer
+                    team_score integer default null
                 );
 
                 create table if not exists scores
@@ -40,7 +40,8 @@ def create_tables(db_connection):
                 create table if not exists users
                 (
                     login text,
-                    password text
+                    salt text,
+                    hash text
                 );
 
                 create view game_scores as
@@ -197,8 +198,9 @@ def load_test_data(db_connection):
                 (6, 1);
 
                 delete from users;
-                insert into users(login, password) values
-                ('admin', '9765a57f2010506383de91052915ce8bafbdb39f3e5a8c1a1693a0076365d37abbfd3305881ea3b5fa1426316afd7df3');
+                insert into users(login, salt, hash) values
+                ('admin', '8b9dbd971866baf5f09e7bf6557ee6a047eddc394bb2e685ef2b2c38fbb38e18c10c5c568155a6b41db18090617eabcee856c0f7439af84cb3307892f0fb322f',
+                '2e74791e8816226fcc3eb0b82173ee525dc4989cedc8cba24f73aafa5abc8da7294b2fee8e174a0de6a7cbdb447da916dadfe21bc0516c2788428fa1529b6d07');
 
             '''
     cursor = db_connection.cursor()
