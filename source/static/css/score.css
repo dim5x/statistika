@@ -4,20 +4,25 @@ form {
 }
 
 /*Для выравнивания полей ввода в форме "Добавить игрока":*/
-#score-form div {
+.score-form div {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
 }
 
-#score-form label {
+.score-form label {
     width: 250px;
 }
+.score-form button {
+    width: 310px;
+}
 
-#score-form input {
+.score-form input {
     /*flex: -1;*/
     width: 50px;
 }
-.flashes{
-    color: #0a58ca;
+
+
+#chgk {
+    display: none;
 }
