@@ -5,16 +5,19 @@
     margin-left: -20px;
 }
 
+/*season*/
 .box1 {
     background: #fbebe0;
     padding-left: 10px;
-    padding-right: 10px;
-    width: 100px;
+    /*padding-right: 10px;*/
+    width: 70px;
 
 }
 
+/*table*/
 .box2 {
     /*background: #0a58ca;*/
     padding-top: 10px;
     /*padding-left: 10px;*/
+    overflow-x: auto;
 }
