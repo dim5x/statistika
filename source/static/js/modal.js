@@ -29,7 +29,8 @@ btn.onclick = function () {
         input.setAttribute("class", "modal_input")
         input.setAttribute("autocomplete", "off")
         input.setAttribute("name", "result-" + name);
-        input.setAttribute("value", "0")
+        // input.setAttribute('autofocus', 'autofocus');
+        // input.setAttribute("value", "0")
 
         div.appendChild(label);
         div.appendChild(input);
@@ -47,7 +48,7 @@ sendBtn.onclick = function () {
         data[name] = input.value;
     });
 
-    fetch('/set_result', {
+    fetch('/update', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
