@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import hashlib
 import os
 import re
@@ -26,7 +27,7 @@ def get_db_connection() -> sqlite3.Connection:
     db_connection = getattr(g, '_database', None)
     if db_connection is None:
         # для тестирования
-        # расскоментировать, если необходимо пересоздать БД
+        # раскоментировать, если необходимо пересоздать БД
         # os.remove('../data.db')
         if not os.path.exists('../data.db'):
             db_connection = g._database = sqlite3.connect('../data.db')
@@ -89,10 +90,18 @@ def admin_login():
     if request.method == 'POST':
         login = request.form.get('login')
         password = request.form.get('password')
+        query = 'SELECT salt FROM users WHERE login = :login'
+        login_exists = cursor.execute(query, {'login': login}).fetchall()
 
-        password_hash = hashlib.sha3_384(bytes(password, encoding='UTF-8')).hexdigest()
+        if login_exists:
+            print('There is a salt')
+            salt = login_exists[0][0]
 
-        query = '''
+            password_hash = hashlib.scrypt(password=bytes(password, encoding='UTF-8'),
+                                           salt=bytes(salt, encoding='UTF-8'),
+                                           n=2 ** 14, r=8, p=1, dklen=64).hex()
+
+            query = '''
                     select
                         count(1) _count
                     from
@@ -100,13 +109,13 @@ def admin_login():
                     where
                         login =:login
                         and
-                        password =:hash
+                        hash =:hash
                 '''
-        data = {'login': login, 'hash': password_hash}
+            data = {'login': login, 'hash': password_hash}
 
-        if cursor.execute(query, data).fetchall()[0][0]:
-            session[login] = login
-            return redirect('/main_table')
+            if cursor.execute(query, data).fetchall()[0][0]:
+                session[login] = login
+                return redirect('/main_table')
         else:
             return render_template('login.html', message='Fail.')
 
@@ -172,9 +181,9 @@ def get_columns() -> list[dict]:
         elif column == "_sum_":
             field_title = "Cумма"
         elif column == "_sum_minus_2":
-            field_title = "Cумма (-2)"
+            field_title = "Cум(-2)"
         else:
-            field_title = column
+            field_title = '.'.join((column.split('-')[2], column.split('-')[1]))
 
         transformed_columns.append({
             "title": field_title,
@@ -185,7 +194,6 @@ def get_columns() -> list[dict]:
             'hozAlign': 'center' if column == 'summa_2' else 'left',
             # 'contextMenu': 'cellContextMenu'
             'validator': 'numeric',
-
         })
 
     # return jsonify(transformed_columns)
@@ -247,8 +255,11 @@ def check_packet():
 
 @app.route('/test', methods=['POST', 'GET'])
 def test():
+    # print('test')
+    # print(request.referrer)
     if request.method == 'POST':
-        print(request.form)
+        print(request.data.decode('utf-8'))
+        data = request.data.decode('utf-8')
         print('OK')
     # json_data = [
     #     {'id': 1, 'name': "Tiger Nixon", 'position': "System Architect", 'office': "Edinburgh", 'extension': "5421",
@@ -261,7 +272,24 @@ def test():
     #      'columns': ['id', 'name', 'position']
     #      }
 
-    # return lll
+    return render_template('tablecelledit.html')
+
+
+@app.route('/update', methods=['POST', 'GET'])
+def update():
+    if request.method == 'POST':
+        db_connection = get_db_connection()
+        who = request.referrer.split('/')[-1]
+        match who:
+            case 'main_table':
+                print(request.json)
+                date = (datetime.today() - timedelta(days=1)).strftime('%Y-%m-%d')
+                db_management.update_main_table(db_connection, request.json, date)
+                # case 'add_player':
+            #     return render_template('add_player.html')
+            # case 'add_team':
+            #     return render_template('add_team.html')
+    return {'success': True}
 
 
 @app.route('/update_from_github', methods=['POST', 'GET'])
@@ -335,6 +363,7 @@ def update_table_teams():
     except Exception as e:
         print(f"Error: {e}")
         return jsonify(success=False, error=str(e))
+
 
 @app.errorhandler(404)
 def page_not_found(error):
