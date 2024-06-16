@@ -9,8 +9,9 @@ html, body {
 .sidebar {
     width: 200px;
     background-color: #333;
-    padding-top: 20px;
-    height: 100vh;
+    /*padding-top: 20px;*/
+    margin-top: -10px;
+    height: 200%;
     position: fixed;
     top: 0;
     left: 0;
