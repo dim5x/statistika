@@ -1,13 +1,17 @@
-import sqlite3
+import source.statistika_logger
+
+log = source.statistika_logger.get_logger(__name__)
 
 
 def create_tables(db_connection):
+    log.warning('Creating tables...')
     query = '''
                 create table if not exists players
                 (
                     id integer primary key autoincrement,
                     fio text not null,
-                    player_id text not null
+                    player_id text not null,
+                    team_id integer
                 );
 
                 create table if not exists teams
@@ -92,6 +96,7 @@ def create_tables(db_connection):
 
 
 def load_test_data(db_connection):
+    log.warning('Loading test data...')
     query = '''
             delete from teams;
 
@@ -107,14 +112,14 @@ def load_test_data(db_connection):
 
             delete from players;
 
-            insert into players(fio, player_id) values
-                ('Леонов Александр', 59778),
-                ('Чечекин Максим', 172423),
-                ('Вишнякова Наталья', 172425),
-                ('Лебедев Алексей', 53716),
-                ('Солопов Максим', 172528),
-                ('Бадмаева Ирина', 94023),
-                ('Гизатуллин Олег', 47697);
+            insert into players(fio, player_id, team_id) values
+                ('Леонов Александр', 59778, 5),
+                ('Чечекин Максим', 172423, 4),
+                ('Вишнякова Наталья', 172425, 4),
+                ('Лебедев Алексей', 53716, 4),
+                ('Солопов Максим', 172528, 4),
+                ('Бадмаева Ирина', 94023, 5),
+                ('Гизатуллин Олег', 47697,5);
 
             delete from games;
 
