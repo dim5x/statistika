@@ -3,6 +3,8 @@ import hashlib
 import os
 import re
 import sqlite3
+import time
+from threading import Thread
 
 from flask import Flask, g, jsonify, redirect, render_template, request, session
 from flask_cors import CORS
@@ -50,6 +52,56 @@ def close_db_connection(exception: Exception) -> None:
     db_connection = getattr(g, '_database', None)
     if db_connection is not None:
         db_connection.close()
+
+
+def update_players_tournaments() -> None:
+    # log.warning('Updating players tournaments...')
+
+    # Подключаемся к БД.
+    con = sqlite3.connect('../data.db')
+    cursor = con.cursor()
+
+    while True:
+        # Получаем список игроков.
+        query = "SELECT player_id FROM players"
+        players: list[str] = [i[0] for i in cursor.execute(query).fetchall()]
+
+        # Проход по всем игрокам.
+        for player_id in players:
+            # Запрос на получение турниров игрока из БД.
+            query = "SELECT tournaments FROM players WHERE player_id = ?"
+            tournaments_in_db: str = cursor.execute(query, (player_id,)).fetchall()[0][0]
+
+            # Запрос на получение турниров игрока {player_id} из Интернета.
+            # log.warning(f'Запрос на получение турниров игрока {player_id} из Интернета.')
+            try:
+                url = f'https://api.rating.chgk.net/players/{player_id}/tournaments'
+                r = requests.get(url=url)
+                if r.status_code != 200:
+                    raise Exception(f'Something wrong with request to API. Status code: {r.status_code}, from {url}')
+
+                tournaments_in_web = [i['idtournament'] for i in r.json()]
+                tournaments_in_web = ','.join(map(str, tournaments_in_web))
+
+                # Коли записи разнятся, обновляем БД.
+                # log.warning(f'Обновляем БД для игрока {player_id}.')
+                if tournaments_in_web != tournaments_in_db:
+                    query = "UPDATE players SET tournaments = ? WHERE player_id = ?"
+                    cursor.execute(query, (tournaments_in_web, player_id))
+                    con.commit()
+                    time.sleep(2)
+            # Если 404, то предполагаем неполадки сети, логируем, ждём 1 час и продолжаем.
+            except Exception as e:
+                # log.error(e)
+                time.sleep(60 * 60)  # 1-hour sleep after error
+                continue
+
+        # После прохода по всем игрокам ждём 1 день.
+        time.sleep(60 * 60 * 24)  # 1 day
+
+
+thread = Thread(target=update_players_tournaments)
+thread.start()
 
 
 @app.route('/')
@@ -129,9 +181,11 @@ def main_table():
     """
     log.info('Function main_table() was called...')
 
+    thread_status = '&#128994;' if thread.is_alive() else '&#128308;'
+
     if session.get('login'):
         if request.method == 'GET':
-            return render_template('main_table.html')
+            return render_template('main_table.html', thread_status=thread_status)
         if request.method == 'POST':
             log.debug(request.data)
     else:
@@ -334,7 +388,7 @@ def update_table_players():
         team_id = cursor.fetchone()[0]
         log.debug(team_id)
         # Записываем данные в таблицу players
-        query = 'insert into players (fio, player_id,team_id) values (?, ?, ?)'
+        query = 'insert into players (fio, player_id, team_id) values (?, ?, ?)'
         cursor.execute(query, (fio, player_id, team_id))
         db_connection.commit()
         log.info(f'Записали игрока {fio} в таблицу players.')
