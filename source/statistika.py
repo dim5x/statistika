@@ -55,6 +55,13 @@ def close_db_connection(exception: Exception) -> None:
 
 
 def update_players_tournaments() -> None:
+    """
+    Постоянно обновляет турниры игроков в БД.
+
+    Извлекает список игроков из БД и для каждого игрока
+    извлекает турниры из Интернета и обновляет базу данных, если
+    турниры разные. Между каждой итерацией проходит 1 день.
+    """
     # log.warning('Updating players tournaments...')
 
     # Подключаемся к БД.
@@ -64,10 +71,10 @@ def update_players_tournaments() -> None:
     while True:
         # Получаем список игроков.
         query = "SELECT player_id FROM players"
-        players: list[str] = [i[0] for i in cursor.execute(query).fetchall()]
+        players_ids: list[str] = [row[0] for row in cursor.execute(query).fetchall()]
 
         # Проход по всем игрокам.
-        for player_id in players:
+        for player_id in players_ids:
             # Запрос на получение турниров игрока из БД.
             query = "SELECT tournaments FROM players WHERE player_id = ?"
             tournaments_in_db: str = cursor.execute(query, (player_id,)).fetchall()[0][0]
@@ -76,11 +83,12 @@ def update_players_tournaments() -> None:
             # log.warning(f'Запрос на получение турниров игрока {player_id} из Интернета.')
             try:
                 url = f'https://api.rating.chgk.net/players/{player_id}/tournaments'
-                r = requests.get(url=url)
-                if r.status_code != 200:
-                    raise Exception(f'Something wrong with request to API. Status code: {r.status_code}, from {url}')
+                response = requests.get(url=url)
+                if response.status_code != 200:
+                    raise Exception(
+                        f'Something wrong with request to API. Status code: {response.status_code}, from {url}')
 
-                tournaments_in_web = [i['idtournament'] for i in r.json()]
+                tournaments_in_web = [i['idtournament'] for i in response.json()]
                 tournaments_in_web = ','.join(map(str, tournaments_in_web))
 
                 # Коли записи разнятся, обновляем БД.
@@ -106,6 +114,13 @@ thread.start()
 
 @app.route('/')
 def index():
+    """
+    Обработчик маршрута для корневого URL-адреса ("/").
+
+    Очищает сеанс, извлекает данные из БД,
+    добавляет имена столбцов в начало данных, преобразует данные в формат JSON, сортирует их по полю "_sum_minus_2",
+    а затем отображает шаблон index.html с отсортированными данными и именами столбцов.
+    """
     session.clear()
 
     # Получаем данные из базы
