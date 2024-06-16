@@ -18,3 +18,10 @@ form {
     /*flex: -1;*/
     width: 200px;
 }
+/*Выпадающий список*/
+#player-team{
+    width: 208px;
+}
+#player-form button {
+    width: 310px;
+}
