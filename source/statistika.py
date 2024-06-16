@@ -10,12 +10,14 @@ import requests
 
 from cicd import db_initialization
 import db_management
+import statistika_logger
 
 app = Flask(__name__)
-app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'  # для работы session
+app.secret_key = os.urandom(24)  # для работы session
 
 CORS(app)
 
+log = statistika_logger.get_logger(__name__)
 
 def get_db_connection() -> sqlite3.Connection:
     """
@@ -23,7 +25,6 @@ def get_db_connection() -> sqlite3.Connection:
     Если соединение не существует, устанавливает новое соединение с использованием SQLite с 'data.db'.
     Возвращает существующее или новосозданное соединение с базой данных.
     """
-
     db_connection = getattr(g, '_database', None)
     if db_connection is None:
         # для тестирования
@@ -85,7 +86,7 @@ def admin_login():
     db_connection = get_db_connection()
     cursor = db_connection.cursor()
 
-    print('logon')
+    log.info('Logon')
 
     if request.method == 'POST':
         login = request.form.get('login')
@@ -94,7 +95,7 @@ def admin_login():
         login_exists = cursor.execute(query, {'login': login}).fetchall()
 
         if login_exists:
-            print('There is a salt')
+            log.info('There is a salt')
             salt = login_exists[0][0]
 
             password_hash = hashlib.scrypt(password=bytes(password, encoding='UTF-8'),
@@ -127,9 +128,9 @@ def main_table() -> str:
     """
     Функция, которая служит обработчиком маршрута для таблицы. Отображает шаблон 'main_table.html'.
     """
-    print('Function main_table() was called...')
+    log.info('Function main_table() was called...')
     if request.method == 'POST':
-        print(request.data)
+        log.debug(request.data)
     return render_template('main_table.html')
 
 
@@ -140,7 +141,10 @@ def add_game() -> str:
 
 @app.route('/add_player', methods=['GET', 'POST'])
 def add_player():
-    return render_template('add_player.html')
+    db_connection = get_db_connection()
+    # Получаем список команд
+    teams = [i[0] for i in db_management.get_teams(db_connection)]
+    return render_template('add_player.html', teams=teams)
 
 
 @app.route('/add_score', methods=['GET', 'POST'])
@@ -150,7 +154,7 @@ def add_score():
 
     message = ''
     if request.method == 'POST':
-        print(request.form)
+        log.debug(request.form)
         message = 'Данные внесли.'
     return render_template('add_score.html', data=data, message=message)
 
@@ -202,7 +206,7 @@ def get_columns() -> list[dict]:
 
 def to_json(data, columns):
     """Вспомогательная функция для преобразования данных в формат JSON."""
-    print('Function to_json() was called...')
+    log.info('Function to_json() was called...')
     json_data = []
     for row in data:
         row_data = {}
@@ -228,7 +232,8 @@ def get_data():
             return to_json(data, columns)
         case 'add_player':
             data = db_management.get_players(db_connection)
-            columns = ['id', 'fio', 'player_id']
+            log.debug(data)
+            columns = ['fio', 'player_id', 'team_name']  # менять на человеческие в table_players.js
             return to_json(data, columns)
         case 'add_team':
             data = db_management.get_teams(db_connection)
@@ -238,12 +243,12 @@ def get_data():
 
 @app.route('/check_packet', methods=['POST'])
 def check_packet():
-    print(request.json)
+    log.debug(request.json)
     packets = [i for i in request.json if i]
     answer = []
     for packet_id in packets:
         r = requests.get(f'https://rating.maii.li/b/tournament/{packet_id}/')
-        # print(r.text)
+
         pattern = r'/\/b\/player\/(\d+)/gm'
         matches = re.findall(pattern, r.text)
         print(matches)
@@ -255,12 +260,10 @@ def check_packet():
 
 @app.route('/test', methods=['POST', 'GET'])
 def test():
-    # print('test')
-    # print(request.referrer)
     if request.method == 'POST':
-        print(request.data.decode('utf-8'))
+        log.debug(request.data.decode('utf-8'))
         data = request.data.decode('utf-8')
-        print('OK')
+        log.info('OK')
     # json_data = [
     #     {'id': 1, 'name': "Tiger Nixon", 'position': "System Architect", 'office': "Edinburgh", 'extension': "5421",
     #      'startDate': "2011/04/25", 'salary': "Tiger Nixon"}
@@ -282,7 +285,7 @@ def update():
         who = request.referrer.split('/')[-1]
         match who:
             case 'main_table':
-                print(request.json)
+                log.debug(request.json)
                 date = (datetime.today() - timedelta(days=1)).strftime('%Y-%m-%d')
                 db_management.update_main_table(db_connection, request.json, date)
                 # case 'add_player':
@@ -292,21 +295,21 @@ def update():
     return {'success': True}
 
 
-@app.route('/update_from_github', methods=['POST', 'GET'])
-def update_from_github() -> jsonify:
-    """
-    Функция для обновления данных из GitHub.
-    Эта функция скачивает последние изменения в репозитории и обновляет проект.
-    """
-    # print(request.json)
-    cmd = 'echo "kek" > lol.kek'
-    os.system(cmd)
-    # cmd = 'sudo touch lol.kek'
-    cmd = 'sudo ./update.sh'
-    os.system(cmd)
-    print(cmd)
-    # return jsonify(success=True, data=request.json)
-    return str(request.json)
+# @app.route('/update_from_github', methods=['POST', 'GET'])
+# def update_from_github() -> jsonify:# todo
+#     """
+#     Функция для обновления данных из GitHub.
+#     Эта функция скачивает последние изменения в репозитории и обновляет проект.
+#     """
+#     # print(request.json)
+#     cmd = 'echo "kek" > lol.kek'
+#     os.system(cmd)
+#     # cmd = 'sudo touch lol.kek'
+#     cmd = 'sudo ./update.sh'
+#     os.system(cmd)
+#     print(cmd)
+#     # return jsonify(success=True, data=request.json)
+#     return str(request.json)
 
 
 @app.route('/update_table_players', methods=['POST'])
@@ -320,21 +323,28 @@ def update_table_players():
     db_connection = get_db_connection()
     cursor = db_connection.cursor()
     try:
-        print(request.json)
         d = request.json
-        print(type(d))
+        log.debug(d)
         fio = d['playerFIO']
         player_id = d['playerName']
-
-        query = 'insert into players (fio, player_id) values (?, ?)'
-        cursor.execute(query, (fio, player_id))
+        team_name = d['teamName']
+        log.debug(fio, player_id, team_name)
+        # Получаем идентификатор команды
+        query = 'select id from teams where name = ?'
+        cursor.execute(query, (team_name,))
+        team_id = cursor.fetchone()[0]
+        log.debug(team_id)
+        # Записываем данные в таблицу players
+        query = 'insert into players (fio, player_id,team_id) values (?, ?, ?)'
+        cursor.execute(query, (fio, player_id, team_id))
         db_connection.commit()
+        log.info(f'Записали игрока {fio} в таблицу players.')
 
         response = {"success": True}
         return jsonify(response)
 
     except Exception as e:
-        print(f"Error: {e}")
+        log.error(f"Error: {e}")
         return jsonify(success=False, error=str(e))
 
 
@@ -349,9 +359,9 @@ def update_table_teams():
     db_connection = get_db_connection()
     cursor = db_connection.cursor()
     try:
-        print(request.json)
+        log.debug(request.json)
         d = request.json
-        print(type(d))
+        log.debug(type(d))
         t_name = d['team_name']
         query = 'insert into teams(name) values (?)'
         cursor.execute(query, (t_name,))
@@ -361,7 +371,7 @@ def update_table_teams():
         return jsonify(response)
 
     except Exception as e:
-        print(f"Error: {e}")
+        log.error(f"Error: {e}")
         return jsonify(success=False, error=str(e))
 
 
