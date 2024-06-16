@@ -19,6 +19,7 @@ CORS(app)
 
 log = statistika_logger.get_logger(__name__)
 
+
 def get_db_connection() -> sqlite3.Connection:
     """
     Функция, которая получает соединение с базой данных.
@@ -46,7 +47,6 @@ def close_db_connection(exception: Exception) -> None:
     Параметры:
     - exception: Исключение, которое вызвало завершение, если таковое имеется.
     """
-
     db_connection = getattr(g, '_database', None)
     if db_connection is not None:
         db_connection.close()
@@ -56,11 +56,9 @@ def close_db_connection(exception: Exception) -> None:
 def index():
     session.clear()
 
+    # Получаем данные из базы
     db_connection = get_db_connection()
-    data = db_management.get_maintable(db_connection)
-
-    # Получение названий столбцов из результирующего набора
-    columns = [description[0] for description in data.description]
+    data, columns = db_management.get_maintable(db_connection)
 
     # Добавление названий столбцов в начало
     thead = ['Команда', 'Сумма', 'Сумма - 2'] + columns[3:]
@@ -86,7 +84,7 @@ def admin_login():
     db_connection = get_db_connection()
     cursor = db_connection.cursor()
 
-    log.info('Logon')
+    log.info('Logon.')
 
     if request.method == 'POST':
         login = request.form.get('login')
@@ -102,20 +100,21 @@ def admin_login():
                                            salt=bytes(salt, encoding='UTF-8'),
                                            n=2 ** 14, r=8, p=1, dklen=64).hex()
 
-            query = '''
-                    select
+            query = """
+                    SELECT
                         count(1) _count
-                    from
+                    FROM
                         users
-                    where
+                    WHERE 
                         login =:login
-                        and
+                        AND 
                         hash =:hash
-                '''
+                """
+
             data = {'login': login, 'hash': password_hash}
 
             if cursor.execute(query, data).fetchall()[0][0]:
-                session[login] = login
+                session['login'] = login
                 return redirect('/main_table')
         else:
             return render_template('login.html', message='Fail.')
@@ -124,14 +123,19 @@ def admin_login():
 
 
 @app.route('/main_table')
-def main_table() -> str:
+def main_table():
     """
     Функция, которая служит обработчиком маршрута для таблицы. Отображает шаблон 'main_table.html'.
     """
     log.info('Function main_table() was called...')
-    if request.method == 'POST':
-        log.debug(request.data)
-    return render_template('main_table.html')
+
+    if session.get('login'):
+        if request.method == 'GET':
+            return render_template('main_table.html')
+        if request.method == 'POST':
+            log.debug(request.data)
+    else:
+        return redirect('/login')
 
 
 @app.route('/add_game', methods=['GET'])
@@ -170,37 +174,33 @@ def get_columns() -> list[dict]:
     Функция для извлечения названий столбцов из таблицы базы данных и преобразования их в определенный формат
     для отображения.
     """
-    # Подключение к базе данных SQLite
+    # Подключение к базе данных SQLite и получение данных для главной таблицы
     db_connection = get_db_connection()
-    data = db_management.get_maintable(db_connection)
-
-    columns = [description[0] for description in data.description]
+    data, columns = db_management.get_maintable(db_connection)
 
     transformed_columns = []
 
     # Цикл для преобразования каждого элемента массива строк в объект
-    for column in columns[:]:
-        if column == "team_name":
+    for column in columns:
+        if column == 'team_name':
             field_title = "Команда"
-        elif column == "_sum_":
-            field_title = "Cумма"
-        elif column == "_sum_minus_2":
-            field_title = "Cум(-2)"
+        elif column == '_sum_':
+            field_title = 'Cумма'
+        elif column == '_sum_minus_2':
+            field_title = 'Cум(-2)'
         else:
             field_title = '.'.join((column.split('-')[2], column.split('-')[1]))
 
         transformed_columns.append({
-            "title": field_title,
-            "field": column,
-            "editor": "input",  # if column == "team_name" else "number"
             # Пример условной логики для определения значения editor
-            'sorter': 'number',
+            'editor': 'input',  # if column == 'team_name' else 'number'
+            'field': column,
             'hozAlign': 'center' if column == 'summa_2' else 'left',
-            # 'contextMenu': 'cellContextMenu'
+            'sorter': 'number',
+            'title': field_title,
             'validator': 'numeric',
+            # 'contextMenu': 'cellContextMenu'
         })
-
-    # return jsonify(transformed_columns)
     return transformed_columns
 
 
@@ -227,13 +227,12 @@ def get_data():
     who = request.referrer.split('/')[-1]
     match who:
         case 'main_table':
-            data = db_management.get_maintable(db_connection)
-            columns = [description[0] for description in data.description]
+            data, columns = db_management.get_maintable(db_connection)
             return to_json(data, columns)
         case 'add_player':
             data = db_management.get_players(db_connection)
             log.debug(data)
-            columns = ['fio', 'player_id', 'team_name']  # менять на человеческие в table_players.js
+            columns = ['fio', 'player_id', 'team_name']  # менять на человеческие 'ФИО', 'ИД игрока' в table_players.js
             return to_json(data, columns)
         case 'add_team':
             data = db_management.get_teams(db_connection)
@@ -340,11 +339,11 @@ def update_table_players():
         db_connection.commit()
         log.info(f'Записали игрока {fio} в таблицу players.')
 
-        response = {"success": True}
+        response = {'success': True}
         return jsonify(response)
 
     except Exception as e:
-        log.error(f"Error: {e}")
+        log.error(f'Error: {e}')
         return jsonify(success=False, error=str(e))
 
 
@@ -367,11 +366,11 @@ def update_table_teams():
         cursor.execute(query, (t_name,))
         db_connection.commit()
 
-        response = {"success": True}
+        response = {'success': True}
         return jsonify(response)
 
     except Exception as e:
-        log.error(f"Error: {e}")
+        log.error(f'Error: {e}')
         return jsonify(success=False, error=str(e))
 
 
