@@ -1,19 +1,20 @@
 // Создание таблицы
-var table = new Tabulator("#example-table", {
+let table = new Tabulator("#example-table", {
     // height: 205,
     // width: "100%",
     layout: "fitData",
     columns: [
-        {title: "ID", field: "id", editor: false},
-        {title: "FIO", field: "fio", editor: "input"},
-        {title: "player_ID", field: "player_id", editor: "number"},
+        // {title: "ID", field: "id", editor: false},
+        {title: "ФИО", field: "fio", editor: "input"},
+        {title: "ID игрока", field: "player_id", editor: "number"},
+        {title: "Команда", field: "team_name", editor: "number"},
     ],
     // autoColumns: true,
     ajaxURL: "/get_data",
     ajaxConfig: "GET",
-    ajaxResponse: function (url, params, response) {
-        return response;
-    },
+    // ajaxResponse: function (url, params, response) {
+    //     return response;
+    // },
 });
 
 // Функция для обновления данных в таблице через AJAX и перерисовки
@@ -42,10 +43,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         let playerFIO = document.getElementById('player-fio').value;
         let playerName = document.getElementById('player-name').value;
-        console.log(playerFIO, playerName);
+        let teamName = document.getElementById('player-team').value;
+        console.log(playerFIO, playerName, teamName);
         let postData = {
             playerFIO: playerFIO,
-            playerName: playerName
+            playerName: playerName,
+            teamName: teamName
         };
 
         // Отправка данных на сервер с использованием метода POST
