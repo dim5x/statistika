@@ -1,5 +1,7 @@
 import sqlite3
-def get_maintable(db_connection: sqlite3.Connection) -> sqlite3.Cursor:
+
+
+def get_maintable(db_connection: sqlite3.Connection) -> tuple[sqlite3.Cursor, list[str]]:
     """
     Получаем основную таблицу для указанного соединения с базой данных.
 
@@ -98,12 +100,12 @@ def get_maintable(db_connection: sqlite3.Connection) -> sqlite3.Cursor:
     cursor.execute(query)
     query = cursor.fetchone()[0]
     data = cursor.execute(query)
-    return data
+    columns = [description[0] for description in data.description]
+    return data, columns
 
 
 def get_players(db_connection):
     cursor = db_connection.cursor()
-    # query = 'SELECT * FROM main.players'
     query = ('SELECT fio, player_id, teams.name '
              'FROM main.players, main.teams '
              'WHERE players.team_id = teams.id')
@@ -132,7 +134,6 @@ def update_main_table(db_connection, json, date):
     teams_query = 'SELECT id, name FROM main.teams'
     cursor.execute(teams_query)
     teams = {team[1]: team[0] for team in cursor.fetchall()}
-    # print(teams)
 
     # Заменить название команды на ID команды в json
     json_with_team_ids = [(game_id, 'ЧГК', teams[row], None if json[row] == '' else json[row]) for row in json]
