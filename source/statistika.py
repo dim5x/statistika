@@ -209,11 +209,23 @@ def main_table():
 
 @app.route('/add_game', methods=['GET'])
 def add_game() -> str:
+    """
+    Отображает шаблон add_game.html и возвращает визуализированный HTML в виде строки.
+
+    Эта функция является обработчиком маршрута для конечной точки URL-адреса «/add_game». Он принимает запросы GET
+    и возвращает обработанный шаблон add_game.html в виде строки.
+    """
     return render_template('add_game.html')
 
 
 @app.route('/add_player', methods=['GET', 'POST'])
 def add_player():
+    """
+    Отображает шаблон add_player.html и возвращает визуализированный HTML в виде строки.
+
+    Эта функция является обработчиком маршрута для конечной точки URL-адреса «/add_player». Он принимает запросы GET
+    и возвращает обработанный шаблон add_game.html в виде строки.
+    """
     db_connection = get_db_connection()
     # Получаем список команд
     teams = [i[0] for i in db_management.get_teams(db_connection)]
@@ -288,6 +300,9 @@ def to_json(data, columns):
 
 @app.route('/get_data', methods=['GET'])
 def get_data():
+    """
+    Обработчик основной конечной точки для получения данных /get_data.
+    """
     if request.referrer is None:
         return 'Що таке?'
 
@@ -311,6 +326,7 @@ def get_data():
 
 @app.route('/check_packet', methods=['POST'])
 def check_packet():
+    """Проверка играли ли игроки в этом пакете."""
     log.debug(request.json)
     packets = [i for i in request.json if i]
     answer = []
