@@ -1,7 +1,7 @@
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/394fdb6ea9b7416e9b43fd75aa23caed)](https://app.codacy.com/gh/dim5x/statistika/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Maintainability](https://api.codeclimate.com/v1/badges/64ff277d3979ce6f4f83/maintainability)](https://codeclimate.com/github/dim5x/statistika/maintainability)
 [![Commits](https://badgen.net/github/commits/dim5x/statistika)]()
 [![Last commit](https://badgen.net/github/last-commit/dim5x/statistika)]()
-[![Maintainability](https://api.codeclimate.com/v1/badges/64ff277d3979ce6f4f83/maintainability)](https://codeclimate.com/github/dim5x/statistika/maintainability)
-[![Lines of code](https://badgen.net/codeclimate/loc/dim5x/statistika)]()
 
 
 <details>
