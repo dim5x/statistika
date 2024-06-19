@@ -134,7 +134,7 @@ erDiagram
 Структура проекта (в png)
 </summary>
 
-(а здесь в формате холста Obsidian: https://www.sharecanvas.io/p/stat)
+(а здесь в формате холста Obsidian: <https://www.sharecanvas.io/p/stat>)
 
 ![Stat.png](doc/Stat.png)
     
