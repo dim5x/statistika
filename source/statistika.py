@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import hashlib
 import os
+import queue
 import re
 import sqlite3
 import time
@@ -20,6 +21,8 @@ app.secret_key = os.urandom(24)  # для работы session
 CORS(app)
 
 log = statistika_logger.get_logger(__name__)
+
+q = queue.Queue()
 
 
 def get_db_connection() -> sqlite3.Connection:
@@ -54,62 +57,100 @@ def close_db_connection(exception: Exception) -> None:
         db_connection.close()
 
 
-def update_players_tournaments() -> None:
+def update_players_tournaments(q: queue.Queue) -> None:
     """
-    Постоянно обновляет турниры игроков в БД.
+    Update the tournaments in the DB by fetching the tournaments from the internet and comparing them
+    with the tournaments in the DB.
 
-    Извлекает список игроков из БД и для каждого игрока
-    извлекает турниры из Интернета и обновляет базу данных, если
-    турниры разные. Между каждой итерацией проходит 1 день.
+    Parameters:
+        q (queue.Queue): A queue containing player IDs.
+
+    Returns:
+        None
     """
-    # log.warning('Updating players tournaments...')
+    log.warning('Start updating players tournaments...')
 
     # Подключаемся к БД.
-    con = sqlite3.connect('../data.db')
-    cursor = con.cursor()
+    with sqlite3.connect('../data.db') as con:
+        cursor = con.cursor()
 
     while True:
-        # Получаем список игроков.
+        # Если в очереди есть данные, то берём их в обработку.
+        if q:
+            players_ids = q.get()
+
+            # Проход по всем игрокам.
+            for player_id in players_ids:
+                # Запрос на получение турниров игрока из БД.
+                query = 'SELECT tournaments FROM players WHERE player_id = ?'
+                tournaments_in_db: str = cursor.execute(query, (player_id,)).fetchall()[0][0]
+
+                # Запрос на получение турниров игрока {player_id} из Интернета.
+                log.warning(f'Запрос на получение турниров игрока {player_id} из Интернета.')
+                try:
+                    url = f'https://api.rating.chgk.net/players/{player_id}/tournaments'
+                    with requests.get(url=url) as response:
+                        if response.status_code != 200:
+                            raise Exception(
+                                f'Something wrong with request to API. Status code: {response.status_code}, from {url}')
+
+                    tournaments_in_web = [i['idtournament'] for i in response.json()]
+                    tournaments_in_web = ','.join(map(str, tournaments_in_web))
+
+                    # Коли записи разнятся, обновляем БД.
+                    if tournaments_in_web != tournaments_in_db:
+                        log.warning(f'Обновляем запись турниров в БД для игрока: {player_id}.')
+                        query = 'UPDATE players SET tournaments = ? WHERE player_id = ?'
+                        cursor.execute(query, (tournaments_in_web, player_id))
+                        con.commit()
+                        time.sleep(2)
+
+                # Если 404, то предполагаем неполадки сети, логируем, ждём 1 час и продолжаем.
+                except Exception as e:
+                    log.error(e)
+                    time.sleep(60 * 60)  # 1-hour sleep after error
+                    # time.sleep(5)
+                    continue
+        time.sleep(10)
+
+
+def watchdog(q: queue.Queue) -> None:
+    """
+    Runs a watchdog process that periodically retrieves the player IDs from the 'players' table in the 'data.db'
+    database and puts them into the provided queue.
+    The function runs in an infinite loop and sleeps for 24 hours between each iteration.
+
+    Parameters:
+    - q (queue.Queue): The queue to put the player IDs into.
+
+    Returns:
+    - None
+    """
+    while True:
+        log.warning('Watchdog started.')
+        connection = sqlite3.connect('../data.db')
+        cursor = connection.cursor()
+
+        # Получаем список ID игроков
         query = "SELECT player_id FROM players"
         players_ids: list[str] = [row[0] for row in cursor.execute(query).fetchall()]
 
-        # Проход по всем игрокам.
-        for player_id in players_ids:
-            # Запрос на получение турниров игрока из БД.
-            query = "SELECT tournaments FROM players WHERE player_id = ?"
-            tournaments_in_db: str = cursor.execute(query, (player_id,)).fetchall()[0][0]
+        # Кладём список в очередь.
+        q.put(players_ids)
 
-            # Запрос на получение турниров игрока {player_id} из Интернета.
-            # log.warning(f'Запрос на получение турниров игрока {player_id} из Интернета.')
-            try:
-                url = f'https://api.rating.chgk.net/players/{player_id}/tournaments'
-                response = requests.get(url=url)
-                if response.status_code != 200:
-                    raise Exception(
-                        f'Something wrong with request to API. Status code: {response.status_code}, from {url}')
+        # Закрываем соединение с БД
+        cursor.close()
+        connection.close()
 
-                tournaments_in_web = [i['idtournament'] for i in response.json()]
-                tournaments_in_web = ','.join(map(str, tournaments_in_web))
-
-                # Коли записи разнятся, обновляем БД.
-                # log.warning(f'Обновляем БД для игрока {player_id}.')
-                if tournaments_in_web != tournaments_in_db:
-                    query = "UPDATE players SET tournaments = ? WHERE player_id = ?"
-                    cursor.execute(query, (tournaments_in_web, player_id))
-                    con.commit()
-                    time.sleep(2)
-            # Если 404, то предполагаем неполадки сети, логируем, ждём 1 час и продолжаем.
-            except Exception as e:
-                # log.error(e)
-                time.sleep(60 * 60)  # 1-hour sleep after error
-                continue
-
-        # После прохода по всем игрокам ждём 1 день.
-        time.sleep(60 * 60 * 24)  # 1 day
+        # Спим 24 часа
+        time.sleep(60 * 60 * 24)
 
 
-thread = Thread(target=update_players_tournaments)
-thread.start()
+workers = [Thread(target=update_players_tournaments, args=(q,), name='check_once'),
+           Thread(target=watchdog, args=(q,), name='watchdog')]
+
+for w in workers:
+    w.start()
 
 
 @app.route('/')
@@ -196,7 +237,7 @@ def main_table():
     """
     log.info('Function main_table() was called...')
 
-    thread_status = '&#128994;' if thread.is_alive() else '&#128308;'
+    thread_status = '&#128994;' if w.is_alive() else '&#128308;'
 
     if session.get('login'):
         if request.method == 'GET':
@@ -287,7 +328,7 @@ def get_columns() -> list[dict]:
 
 def to_json(data, columns):
     """Вспомогательная функция для преобразования данных в формат JSON."""
-    log.info('Function to_json() was called...')
+    log.debug('Function to_json() was called...')
     json_data = []
     for row in data:
         row_data = {}
@@ -328,17 +369,28 @@ def get_data():
 def check_packet():
     """Проверка играли ли игроки в этом пакете."""
     log.debug(request.json)
-    packets = [i for i in request.json if i]
+    db_connection = get_db_connection()
+
     answer = []
-    for packet_id in packets:
-        r = requests.get(f'https://rating.maii.li/b/tournament/{packet_id}/')
+    # p={}
 
-        pattern = r'/\/b\/player\/(\d+)/gm'
-        matches = re.findall(pattern, r.text)
-        print(matches)
-        print(len(matches))
-        answer.append(matches)
+    players = db_management.get_players(db_connection)
+    p = {i[0]: i[1] for i in players}  # {'Леонов Александр': '59778', 'Чечекин Максим': '172423'},
 
+    tournaments = db_management.get_tournaments(db_connection)
+
+    d = {}
+    packets = [i for i in request.json if i]
+    for packet in packets:
+        d[packet] = [i[0] for i in tournaments if (i[1] and packet in i[1].split(','))]
+        # print(d[packet]) # ['Леонов Александр', 'Чечекин Максим', 'Вишнякова Наталья']
+        if d[packet]:
+            b = [f'<a href="https://rating.maii.li/b/player/{p[i]}"/>{i}</a>' for i in d[packet]]
+            print(b)
+            answer.append(
+                f'В турнире <a href="https://rating.maii.li/b/tournament/{packet}/">{packet}</a> играл(и): {b} <br>')
+        else:
+            answer.append(f'В турнире <a href="https://rating.maii.li/b/tournament/{packet}/">{packet}</a> никто не играл. <br>')
     return jsonify(success=True, data=''.join(answer))
 
 
@@ -412,7 +464,7 @@ def update_table_players():
         fio = d['playerFIO']
         player_id = d['playerName']
         team_name = d['teamName']
-        log.debug(fio, player_id, team_name)
+        log.debug((fio, player_id, team_name))
         # Получаем идентификатор команды
         query = 'select id from teams where name = ?'
         cursor.execute(query, (team_name,))
@@ -422,6 +474,7 @@ def update_table_players():
         query = 'insert into players (fio, player_id, team_id) values (?, ?, ?)'
         cursor.execute(query, (fio, player_id, team_id))
         db_connection.commit()
+        q.put([player_id])
         log.info(f'Записали игрока {fio} в таблицу players.')
 
         response = {'success': True}
@@ -447,7 +500,7 @@ def update_table_teams():
         d = request.json
         log.debug(type(d))
         t_name = d['team_name']
-        query = 'insert into teams(name) values (?)'
+        query = 'INSERT INTO teams(name) VALUES (?)'
         cursor.execute(query, (t_name,))
         db_connection.commit()
 
