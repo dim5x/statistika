@@ -1,4 +1,4 @@
-/*global Tabulator*/
+/*global Tabulator */
 // Создание таблицы
 let table = new Tabulator("#example-table", {
     height: 400,

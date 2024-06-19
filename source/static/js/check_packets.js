@@ -14,19 +14,19 @@ $(document).ready(function () {
 
     // Функция для безопасного вставления HTML
     // Нужна для защиты от XSS
-    function sanitizeHtml(unsafeHtml) {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(unsafeHtml, 'text/html');
-        const allowedTags = ['A']; // Разрешенные теги, можно добавить больше
-
-        doc.body.querySelectorAll('*').forEach(node => {
-            if (!allowedTags.includes(node.tagName)) {
-                node.replaceWith(document.createTextNode(node.outerHTML));
-            }
-        });
-
-        return doc.body.innerHTML;
-    }
+    // function sanitizeHtml(unsafeHtml) {
+    //     const parser = new DOMParser();
+    //     const doc = parser.parseFromString(unsafeHtml, 'text/html');
+    //     const allowedTags = ['A']; // Разрешенные теги, можно добавить больше
+    //
+    //     doc.body.querySelectorAll('*').forEach(node => {
+    //         if (!allowedTags.includes(node.tagName)) {
+    //             node.replaceWith(document.createTextNode(node.outerHTML));
+    //         }
+    //     });
+    //
+    //     return doc.body.innerHTML;
+    // }
 
     // Обработка отправки формы
     $('#game-form').submit(function (event) {
@@ -55,8 +55,8 @@ $(document).ready(function () {
             .then(data => {
                 console.log(data); // Обработка успешного ответа от сервера
                 let d = document.getElementById('serverResponse');
-                // d.innerHTML = data['data'].split('\n').join('<br>');
-                d.innerHTML = sanitizeHtml(data['data']).replace(/\n/g, '<br>');
+                d.innerHTML = data['data'].split('\n').join('<br>');
+                // d.innerHTML = sanitizeHtml(data['data']).replace(/\n/g, '<br>');
             })
             .catch(error => {
                 console.error('Fetch error:', error); // Обработка ошибок

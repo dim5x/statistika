@@ -331,8 +331,8 @@ def to_json(data, columns):
     json_data = []
     for row in data:
         row_data = {}
-        for i in range(0, len(columns)):
-            row_data[columns[i]] = row[i]
+        for i, column in enumerate(columns):
+            row_data[column] = row[i]
         json_data.append(row_data)
 
     return json_data
