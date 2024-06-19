@@ -1,5 +1,5 @@
 let modal = document.getElementById("myModal");
-let btn = document.getElementById("set_result_button");
+let btn = document.getElementById("set-result-button");
 let sendBtn = document.getElementById("send-result");
 let span = document.getElementsByClassName("close")[0];
 let teamNames; // Переменная для хранения списка имен команд
@@ -19,14 +19,14 @@ btn.onclick = function () {
         let label = document.createElement("label");
         label.textContent = name;
         label.setAttribute("for", "result-" + name);
-        label.setAttribute("class", "modal_label")
+        label.setAttribute("class", "modal-label")
 
         label.style.marginRight = "10px"; // Добавляем отступ между лейблом и полем ввода
 
         let input = document.createElement("input");
         input.setAttribute("type", "text");
         input.setAttribute("id", "result-" + name);
-        input.setAttribute("class", "modal_input")
+        input.setAttribute("class", "modal-input")
         input.setAttribute("autocomplete", "off")
         input.setAttribute("name", "result-" + name);
         // input.setAttribute('autofocus', 'autofocus');

@@ -52,11 +52,11 @@
     align-items: flex-start;
 }
 
-.modal_label {
+.modal-label {
     display: inline-block;
     width: 250px; /* Ширина лейбла, можно изменить по вашему усмотрению */
 }
 
-.modal_input {
+.modal-input {
     width: 50px; /* Ширина поля ввода, можно изменить по вашему усмотрению */
 }
