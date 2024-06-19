@@ -1,7 +1,7 @@
 // Создание таблицы
 let table = new Tabulator("#example-table", {
-    // height: 205,
-    // width: "100%",
+    height: 400,
+        // width: "100%",
     layout: "fitData",
     columns: [
         // {title: "ID", field: "id", editor: false},
@@ -12,9 +12,6 @@ let table = new Tabulator("#example-table", {
     // autoColumns: true,
     ajaxURL: "/get_data",
     ajaxConfig: "GET",
-    // ajaxResponse: function (url, params, response) {
-    //     return response;
-    // },
 });
 
 // Функция для обновления данных в таблице через AJAX и перерисовки
