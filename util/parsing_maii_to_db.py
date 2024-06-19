@@ -82,7 +82,7 @@ def parse(url: str) -> str:
     """
     base_url = 'https://rating.maii.li/'
     full_url = base_url + url
-    response = requests.get(full_url)
+    response = requests.get(full_url, timeout=5)
 
     soup = BeautifulSoup(response.content, 'html.parser', from_encoding='utf-8')
     player_id = []
