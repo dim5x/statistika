@@ -32,6 +32,6 @@ label, input, button {
     margin-top: 10px; /* Добавлен верхний отступ */
 }
 
-#check_button {
+#check-button {
     width: 250px;
 }
