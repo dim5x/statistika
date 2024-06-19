@@ -9,24 +9,21 @@
             </div>
             <div>
                 <label for="player-name">ID игрока:</label>
-                <input type="text" id="player-name" name="player-name" required autocomplete="off">
+                <input type="number" id="player-name" name="player-name" required autocomplete="off">
             </div>
             <div>
-                <label for="player-name">Команда:</label>
+                <label for="player-team">Команда:</label>
                 <select id="player-team" name="player-team">
                     {% for team in teams %}
                         <option>{{ team }}</option>
                     {% endfor %}
                 </select>
             </div>
-
             <button type="submit">Добавить</button>
         </form>
         <br>
         <h1>Таблица игроков:</h1>
         <div id="example-table"></div>
-        {#        <button id="update-button">Update Data</button>#}
-
     </section>
     <script src="../static/js/table_players.js"></script>
     <link rel="stylesheet" href="../static/css/player.css">
