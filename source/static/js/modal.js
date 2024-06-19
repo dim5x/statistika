@@ -43,10 +43,26 @@ btn.onclick = function () {
 
 sendBtn.onclick = function () {
     let data = {};
+
+    // teamNames.forEach(function (name) {
+    //     let input = document.getElementById("result-" + name);
+    //     data[name] = input.value;
+    // });
+
+    // Первоначальный "небезопасный" вариант выше
     teamNames.forEach(function (name) {
+    // Простая валидация имени, чтобы убедиться, что оно соответствует допустимому формату
+    if (/^[a-zA-Zа-яА-ЯёЁ0-9 _\-,]+$/.test(name)) {
         let input = document.getElementById("result-" + name);
-        data[name] = input.value;
-    });
+        if (input) {
+            data[name] = input.value;
+        } else {
+            console.warn(`Element with id "result-${name}" not found`);
+        }
+    } else {
+        console.warn(`Invalid team name: "${name}"`);
+    }
+});
 
     fetch('/update', {
         method: 'POST',
