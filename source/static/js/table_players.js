@@ -2,7 +2,7 @@
 // Создание таблицы
 let table = new Tabulator("#example-table", {
     height: 400,
-        // width: "100%",
+    // width: "100%",
     layout: "fitData",
     columns: [
         // {title: "ID", field: "id", editor: false},

@@ -94,6 +94,7 @@
 </summary>
     
 ```mermaid
+
 erDiagram
     games }|--|{ game_result : places
     games {
@@ -142,6 +143,7 @@ erDiagram
 
 ###### Команда развёртывания / установки:
 
+###### 
 ```bash
 git clone https://github.com/dim5x/statistika.git && cd statistika && chmod +x deploy.sh && sudo ./deploy.sh
 ```
