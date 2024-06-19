@@ -1,5 +1,5 @@
 // Создание таблицы
-var table = new Tabulator("#table_teams", {
+let table = new Tabulator("#table_teams", {
     // height: 205,
     // width: "100%",
     layout: "fitDataFill",
@@ -11,9 +11,6 @@ var table = new Tabulator("#table_teams", {
     // autoColumns: true,
     ajaxURL: "/get_data",
     ajaxConfig: "GET",
-    ajaxResponse: function (url, params, response) {
-        return response;
-    },
 });
 
 // Функция для обновления данных в таблице через AJAX и перерисовки
