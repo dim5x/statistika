@@ -22,7 +22,7 @@
     overflow-x: auto;
 }
 
-#thread_status {
+#thread-status {
     padding-left: 20px;
     position: fixed;
     bottom: 10px;
