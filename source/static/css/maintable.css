@@ -47,7 +47,7 @@
     background: #3989c9; /* Синий цвет фона */
     color: #fff; /* Цвет текста */
     padding: 0.5em; /* Поля вокруг текста */
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* Параметры тени */
+    box-shadow: 2px 2px 5px rgba(0 0 0 / 0.3); /* Параметры тени */
     pointer-events: none; /* Подсказка */
     opacity: 0; /* Подсказка невидима */
     transition: 1s; /* Время появления подсказки */
