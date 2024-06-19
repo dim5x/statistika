@@ -1,3 +1,5 @@
+/*global Tabulator */
+
 // Создание таблицы
 let table = new Tabulator("#table_teams", {
     // height: 205,
