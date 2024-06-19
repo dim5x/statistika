@@ -2,7 +2,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 import sys
 
-_log_format = f"%(asctime)s \t [%(levelname)s] \t %(name)s \t (%(filename)s).%(funcName)s(%(lineno)d) \t %(message)s"
+_log_format = f"%(asctime)s \t [%(levelname)s] \t (%(filename)s).%(funcName)s(%(lineno)d) \t %(message)s"
 datefmt = '%d-%m-%Y %H:%M:%S'
 
 
