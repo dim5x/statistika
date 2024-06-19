@@ -297,7 +297,7 @@ def get_columns() -> list[dict]:
     """
     # Подключение к базе данных SQLite и получение данных для главной таблицы
     db_connection = get_db_connection()
-    data, columns = db_management.get_maintable(db_connection)
+    _, columns = db_management.get_maintable(db_connection)
 
     transformed_columns = []
 
