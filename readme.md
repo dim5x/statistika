@@ -3,7 +3,6 @@
 [![Commits](https://badgen.net/github/commits/dim5x/statistika)]()
 [![Last commit](https://badgen.net/github/last-commit/dim5x/statistika)]()
 
-
 <details>
 <summary>
 Структура проекта
