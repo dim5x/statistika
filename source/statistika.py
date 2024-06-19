@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 import hashlib
 import os
 import queue
-import re
 import sqlite3
 import time
 from threading import Thread
