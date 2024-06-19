@@ -142,3 +142,11 @@ def update_main_table(db_connection, json, date):
     cursor.executemany(query, json_with_team_ids)
     db_connection.commit()
     return
+
+
+def get_tournaments(db_connection):
+    cursor = db_connection.cursor()
+    query = 'SELECT fio, tournaments FROM players'
+    cursor.execute(query)  # Выберите все столбцы из таблицы tournaments
+    data = cursor.fetchall()
+    return data
